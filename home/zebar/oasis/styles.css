@@ -1,0 +1,159 @@
+:root {
+  --bg: #0c0e13;
+  --surface: #141c24;
+  --surface_high: #1e2a38;
+  --fg: #f5f5dc;
+  --fg_dim: #8a93a0;
+  --accent: #7fa3c9;
+  --yellow: #f0e68c;
+  --red: #ff7979;
+  --blue: #81c0ff;
+  --green: #7fcf78;
+  --purple: #c695ff;
+  --cyan: #69c3aa;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'JetBrainsMono Nerd Font', monospace;
+  font-size: 13px;
+  color: var(--fg);
+  overflow: hidden;
+}
+
+#root {
+  background: var(--bg);
+  border-bottom: 1px solid var(--surface_high);
+  cursor: default;
+  user-select: none;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  gap: 16px;
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.right {
+  justify-self: end;
+}
+
+.logo {
+  color: var(--blue);
+  font-size: 15px;
+}
+
+.workspaces {
+  display: flex;
+  gap: 4px;
+}
+
+.workspace {
+  min-width: 24px;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg_dim);
+  font: inherit;
+  cursor: pointer;
+}
+
+.workspace.displayed {
+  background: var(--surface_high);
+  color: var(--fg);
+}
+
+.workspace.focused {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: bold;
+}
+
+.workspace:hover {
+  background: var(--surface_high);
+  color: var(--fg);
+}
+
+.title {
+  max-width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg_dim);
+}
+
+.mode {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mode_name {
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--yellow);
+  color: var(--bg);
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.hint_key {
+  margin-right: 4px;
+  color: var(--yellow);
+  font-weight: bold;
+}
+
+.hint_label {
+  color: var(--fg_dim);
+}
+
+.paused {
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--red);
+  color: var(--bg);
+  font-weight: bold;
+}
+
+.stat_icon {
+  margin-right: 6px;
+}
+
+.cpu .stat_icon {
+  color: var(--green);
+}
+
+.memory .stat_icon {
+  color: var(--purple);
+}
+
+.network .stat_icon {
+  color: var(--cyan);
+}
+
+.clock .stat_icon {
+  color: var(--blue);
+}
+
+.high_usage {
+  color: var(--red);
+}
