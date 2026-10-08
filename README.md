@@ -11,14 +11,28 @@
   <a href="https://github.com/uhs-robert/dotfiles-windows/network/members"><img src="https://img.shields.io/github/forks/uhs-robert/dotfiles-windows?colorA=192330&colorB=C799FF&style=for-the-badge&cacheSeconds=4300" alt="Forks"></a>
   <a href="https://discord.gg/b7y5CGVGTB"><img src="https://img.shields.io/discord/1554625284068741140?label=discord&logo=discord&logoColor=white&colorA=192330&colorB=5865F2&style=for-the-badge&cacheSeconds=4300" alt="Discord"></a>
 </p>
-<p align="center">Windows counterpart to <a href="oasis-dots](https://github.com/uhs-robert">oasis-dots</a>, the Arch Linux dotfiles.</p>
+<p align="center">A keyboard-driven Linux workflow for Windows: tiling, a real package manager and your dotfiles, from one command.</p>
 
-One command on a fresh Windows 10/11 machine installs the tools and links the configs, either as a
-full desktop or as a headless CLI setup for SSH (see [Modes](#modes)).
+## Overview
 
-The desktop is GlazeWM (tiling, Alt leader) with a Zebar bar and Flow Launcher. The terminal is
-WezTerm running PowerShell 7 by default, with Nushell as an optional shell. The theme is Oasis
-Moonlight (dark).
+If you live in Linux, Windows is a hostile place to work. There's no tiling window manager, no package manager you'd trust with your setup, a shell that fights your muscle memory, and none of your configs. But sooner or later you end up on Windows anyway: a client hands you a server, a job needs a Windows box, or you want a Windows install of your own for the things only Windows does well.
+
+dotfiles-windows makes that machine feel like home. It's a tiling window manager and a package manager for Windows, wired up with the same tools, keybinds and themes as the Linux side, so moving between the two costs you nothing.
+
+- **Tiling, from the keyboard:** [GlazeWM](https://github.com/glzr-io/glazewm) with i3/Hyprland-style modes (focus and move with `Alt+hjkl`, launch apps with `Alt+a`, jump to them with `Alt+g`), a [Zebar](https://github.com/glzr-io/zebar) status bar that shows which keys are live, and Flow Launcher in place of rofi.
+- **A real package manager:** [Scoop](https://scoop.sh) (with winget where Scoop can't help) installs everything per user. Pick extra apps from an fzf tree, a whole group or a single package at a time.
+- **Your Linux tools, your configs:** WezTerm standing in for kitty and tmux, PowerShell 7 tuned to feel like zsh (vi mode, fzf, starship, zoxide), and nvim, yazi, lazygit, ripgrep, fd and bat. The configs are linked straight from your Linux dotfiles ([oasis-dots](https://github.com/uhs-robert/oasis-dots), [oasis.nvim](https://github.com/uhs-robert/oasis.nvim) and the [neovim config](https://github.com/uhs-robert/neovim)), so an edit on either system is an edit on both.
+- **Safe to re-run:** anything it would overwrite is backed up first, and `uninstall.ps1` puts it all back.
+
+### Who it's for
+
+Linux users who find themselves on Windows in any of these situations:
+
+- **A headless server you SSH into.** Install in `headless` mode for just the shell, editor and CLI tools, with pwsh 7 as your SSH login shell.
+- **A Windows desktop you remote into** over RDP, NinjaOne or whatever the client uses. `desktop` mode gives you the full tiling setup inside the remote session.
+- **Your own machine, as an alternative to Linux.** The same `desktop` mode turns a local Windows install into something close to your Linux desktop, with optional groups for gaming, media and everyday apps.
+
+See [Modes](#modes) for the details.
 
 ## Modes
 
