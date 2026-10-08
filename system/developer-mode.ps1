@@ -5,7 +5,7 @@ Import-Module (Join-Path $PSScriptRoot '../lib/Log.psm1')
 $key_path = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
 $name = 'AllowDevelopmentWithoutDevLicense'
 
-if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole('Administrator')) {
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
   Write-Warn 'developer-mode needs an elevated session'
   return $false
 }

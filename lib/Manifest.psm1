@@ -196,7 +196,12 @@ function Install-ManifestLink($link, $context) {
   }
 
   if ($existing) {
-    if ($is_owned_file) { Remove-LinkOrFile $existing } else { Move-ToBackup $existing $context }
+    if ($is_owned_file) {
+      Remove-LinkOrFile $existing
+      Remove-OwnedFile $target $context
+    } else {
+      Move-ToBackup $existing $context
+    }
   }
   New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
 
