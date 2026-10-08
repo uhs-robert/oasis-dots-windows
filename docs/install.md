@@ -13,6 +13,13 @@ $env:OASIS_DOTS_WINDOWS_ARGS = '-mode headless -unattended'
 irm https://raw.githubusercontent.com/uhs-robert/oasis-dots-windows/main/bootstrap.ps1 | iex
 ```
 
+To test a branch other than `main` (a PR, for example), set `OASIS_DOTS_WINDOWS_BRANCH` and fetch that branch's `bootstrap.ps1`:
+
+```powershell
+$env:OASIS_DOTS_WINDOWS_BRANCH = 'my-branch'
+irm https://raw.githubusercontent.com/uhs-robert/oasis-dots-windows/my-branch/bootstrap.ps1 | iex
+```
+
 Or run the installer directly from a clone:
 
 ```powershell
