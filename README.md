@@ -11,7 +11,7 @@
   <a href="https://github.com/uhs-robert/oasis-dots-windows/network/members"><img src="https://img.shields.io/github/forks/uhs-robert/oasis-dots-windows?colorA=192330&colorB=C799FF&style=for-the-badge&cacheSeconds=4300" alt="Forks"></a>
   <a href="https://discord.gg/b7y5CGVGTB"><img src="https://img.shields.io/discord/1554625284068741140?label=discord&logo=discord&logoColor=white&colorA=192330&colorB=5865F2&style=for-the-badge&cacheSeconds=4300" alt="Discord"></a>
 </p>
-<p align="center">A keyboard-driven Linux workflow for Windows: tiling, a real package manager and your dotfiles, from one command.</p>
+<p align="center">A keyboard-driven Linux workflow for Windows: tiling, a real package manager and your dotfiles.</p>
 
 <!-- TODO: screenshot of the desktop mode (GlazeWM + Zebar + WezTerm) once it has run on a real machine -->
 
