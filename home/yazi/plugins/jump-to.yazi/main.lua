@@ -34,7 +34,7 @@ local targets = {
   appdata = function() return os.getenv("APPDATA") end,
   local_appdata = function() return os.getenv("LOCALAPPDATA") end,
   development = function() return env_or("GITHUB_DIR", user_profile() .. "\\Development") end,
-  dotfiles = function() return env_or("DOTFILES_WINDOWS", user_profile() .. "\\dotfiles-windows") end,
+  dotfiles = function() return env_or("OASIS_DOTS_WINDOWS", user_profile() .. "\\oasis-dots-windows") end,
   yazi_config = function() return env_or("YAZI_CONFIG_HOME", os.getenv("APPDATA") .. "\\yazi\\config") end,
   git_root = git_root,
 }

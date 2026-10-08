@@ -1,7 +1,7 @@
 # Runs on stock Windows PowerShell 5.1 and on pwsh.
-#   irm https://raw.githubusercontent.com/uhs-robert/dotfiles-windows/main/bootstrap.ps1 | iex
+#   irm https://raw.githubusercontent.com/uhs-robert/oasis-dots-windows/main/bootstrap.ps1 | iex
 # `irm | iex` cannot take parameters: pass install.ps1 flags through the
-# DOTFILES_WINDOWS_ARGS environment variable (e.g. '-unattended'), or run
+# OASIS_DOTS_WINDOWS_ARGS environment variable (e.g. '-unattended'), or run
 # install.ps1 directly. A local copy forwards its own arguments as well.
 
 # The body runs in its own scope so that, under `irm | iex`, preferences and helper
@@ -10,7 +10,7 @@
   $ErrorActionPreference = 'Stop'
   [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-  $repo_url = 'https://github.com/uhs-robert/dotfiles-windows.git'
+  $repo_url = 'https://github.com/uhs-robert/oasis-dots-windows.git'
 
   function Write-Step([string] $message) { Write-Host "==> $message" -ForegroundColor Cyan }
 
@@ -62,7 +62,7 @@
   if ($local_root -and (Test-Path (Join-Path $local_root 'install.ps1'))) {
     $repo_dir = $local_root
   } else {
-    $repo_dir = if ($env:DOTFILES_WINDOWS) { $env:DOTFILES_WINDOWS } else { Join-Path $HOME 'dotfiles-windows' }
+    $repo_dir = if ($env:OASIS_DOTS_WINDOWS) { $env:OASIS_DOTS_WINDOWS } else { Join-Path $HOME 'oasis-dots-windows' }
   }
 
   Write-Step "Repo at $repo_dir"
@@ -75,8 +75,8 @@
   }
 
   $install_args = @($args)
-  if ($env:DOTFILES_WINDOWS_ARGS) {
-    $install_args += @($env:DOTFILES_WINDOWS_ARGS -split '\s+' | Where-Object { $_ })
+  if ($env:OASIS_DOTS_WINDOWS_ARGS) {
+    $install_args += @($env:OASIS_DOTS_WINDOWS_ARGS -split '\s+' | Where-Object { $_ })
   }
 
   Write-Step 'Running install.ps1'

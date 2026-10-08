@@ -3,58 +3,63 @@
     src="https://raw.githubusercontent.com/uhs-robert/oasis-dots/assets/logo.png"
     width="auto" height="128" alt="Oasis logo" />
 </p>
-<h1 align="center">dotfiles-windows</h1>
+<h1 align="center">oasis-dots-windows</h1>
 <p align="center">
-  <a href="https://github.com/uhs-robert/dotfiles-windows/stargazers"><img src="https://img.shields.io/github/stars/uhs-robert/dotfiles-windows?colorA=192330&colorB=khaki&style=for-the-badge&cacheSeconds=4300" alt="Stargazers"></a>
-  <a href="https://github.com/uhs-robert/dotfiles-windows/issues"><img src="https://img.shields.io/github/issues/uhs-robert/dotfiles-windows?colorA=192330&colorB=skyblue&style=for-the-badge&cacheSeconds=4300" alt="Issues"></a>
-  <a href="https://github.com/uhs-robert/dotfiles-windows/graphs/contributors"><img src="https://img.shields.io/github/contributors/uhs-robert/dotfiles-windows?colorA=192330&colorB=8FD1C7&style=for-the-badge&cacheSeconds=4300" alt="Contributors"></a>
-  <a href="https://github.com/uhs-robert/dotfiles-windows/network/members"><img src="https://img.shields.io/github/forks/uhs-robert/dotfiles-windows?colorA=192330&colorB=C799FF&style=for-the-badge&cacheSeconds=4300" alt="Forks"></a>
+  <a href="https://github.com/uhs-robert/oasis-dots-windows/stargazers"><img src="https://img.shields.io/github/stars/uhs-robert/oasis-dots-windows?colorA=192330&colorB=khaki&style=for-the-badge&cacheSeconds=4300" alt="Stargazers"></a>
+  <a href="https://github.com/uhs-robert/oasis-dots-windows/issues"><img src="https://img.shields.io/github/issues/uhs-robert/oasis-dots-windows?colorA=192330&colorB=skyblue&style=for-the-badge&cacheSeconds=4300" alt="Issues"></a>
+  <a href="https://github.com/uhs-robert/oasis-dots-windows/graphs/contributors"><img src="https://img.shields.io/github/contributors/uhs-robert/oasis-dots-windows?colorA=192330&colorB=8FD1C7&style=for-the-badge&cacheSeconds=4300" alt="Contributors"></a>
+  <a href="https://github.com/uhs-robert/oasis-dots-windows/network/members"><img src="https://img.shields.io/github/forks/uhs-robert/oasis-dots-windows?colorA=192330&colorB=C799FF&style=for-the-badge&cacheSeconds=4300" alt="Forks"></a>
   <a href="https://discord.gg/b7y5CGVGTB"><img src="https://img.shields.io/discord/1554625284068741140?label=discord&logo=discord&logoColor=white&colorA=192330&colorB=5865F2&style=for-the-badge&cacheSeconds=4300" alt="Discord"></a>
 </p>
 <p align="center">A keyboard-driven Linux workflow for Windows: tiling, a real package manager and your dotfiles, from one command.</p>
 
+<!-- TODO: screenshot of the desktop mode (GlazeWM + Zebar + WezTerm) once it has run on a real machine -->
+
 ## 🖥️ Overview
 
-If you live in Linux, Windows is a hostile place to work: no tiling window manager, no package manager you'd trust with your setup, a shell that fights your muscle memory, and none of your configs. Sooner or later you end up there anyway.
+If you live in Linux, Windows is a hostile place to work: no tiling window manager, no package manager you'd trust with your setup, a shell that fights your muscle memory, and none of your configs. But sooner or later, you end up there anyway thanks to some reason or another (client, family computer, that one app you need, etc).
 
-dotfiles-windows makes that machine feel like home. It's a keyboard-driven tiling desktop and a package manager for Windows, set up with the same tools, keybinds and themes as your Linux side, and it links your configs straight from your Linux dotfiles, so an edit on either system is an edit on both. One command installs it, whichever way you're using Windows:
+oasis-dots-windows makes that machine feel a bit more like `~`. It's a keyboard-driven tiling desktop with a package manager for Windows, set up with the same tools, keybinds and themes as your Linux side, and it links your configs straight from your Linux dotfiles, so an edit on either system is an edit on both. One command installs it, whichever way you're using Windows:
 
-| You're on...                        | Mode       | You get                                                                                   |
-| ----------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
-| A server you SSH into               | `headless` | pwsh 7 as your SSH shell, nvim, yazi, lazygit and the CLI toolset                         |
-| A desktop you remote into (RDP, NinjaOne, ...) | `desktop`  | All of the above, plus GlazeWM tiling, a Zebar bar, Flow Launcher and WezTerm             |
-| Your own machine, as an alternative to Linux   | `desktop`  | The same, with optional groups for browsers, media, gaming and everyday apps              |
-
-<!-- TODO: screenshot of the desktop mode (GlazeWM + Zebar + WezTerm) once it has run on a real machine -->
+| You're on...                                   | Mode       | You get                                                                       |
+| ---------------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| A server you SSH into                          | `headless` | pwsh 7 as your SSH shell, nvim, yazi, lazygit and the CLI toolset             |
+| A desktop you remote into (RDP, NinjaOne, ...) | `desktop`  | All of the above, plus GlazeWM tiling, a Zebar bar, Flow Launcher and WezTerm |
+| Your own machine, as an alternative to Linux   | `desktop`  | The same, with optional groups for browsers, media, gaming and everyday apps  |
 
 ## 📦 Install
 
-In PowerShell on the Windows machine:
+In PowerShell on the Windows machine (run as Admin if you can for symlinks and system tweaks):
 
 ```powershell
-irm https://raw.githubusercontent.com/uhs-robert/dotfiles-windows/main/bootstrap.ps1 | iex
+irm https://raw.githubusercontent.com/uhs-robert/oasis-dots-windows/main/bootstrap.ps1 | iex
 ```
 
 It installs [Scoop](https://scoop.sh), asks whether this is a `desktop` or `headless` machine, and opens an fzf picker for optional apps, where you can take a whole group or single packages. Re-running is safe: anything it would overwrite is backed up first, and `uninstall.ps1` puts it all back.
 
-Run it from an elevated PowerShell if you can. Admin turns on Developer Mode, so configs become real symlinks, and applies a few system tweaks. Without admin everything still installs per user, using junctions and copies instead. Flags, unattended installs and the full list of what gets linked are in [docs/install.md](docs/install.md).
+Run it from an elevated PowerShell if you can. Admin turns on Developer Mode, so configs become real symlinks, and applies a few system tweaks. Without admin everything still installs per user, using junctions and copies instead.
+
+> [!NOTE]
+> Flags, unattended installs, and the full list of what gets linked are in [docs/install.md](docs/install.md).
 
 ## ⌨️ Getting Started, Your First Keys
 
 GlazeWM tiles every window, driven by Alt:
 
-| Keys                 | Does                                                        |
-| -------------------- | ----------------------------------------------------------- |
-| `Alt+Enter`          | Open WezTerm                                                |
-| `Alt+Space`          | Flow Launcher: apps, files, calculator                      |
-| `Alt+h/j/k/l`        | Focus left, down, up, right (`Alt+Shift+h/j/k/l` moves)     |
-| `Alt+1..9`           | Switch workspace (`Alt+Shift+1..9` sends the window there)  |
-| `Alt+a`, then a key  | Launch an app: `b` browser, `e` nvim, `f` yazi, `s` Slack   |
-| `Alt+g`, then a key  | Jump to an app's window, launching it if it isn't open      |
+| Keys                | Does                                                       |
+| ------------------- | ---------------------------------------------------------- |
+| `Alt+Enter`         | Open WezTerm                                               |
+| `Alt+Space`         | Flow Launcher: apps, files, calculator                     |
+| `Alt+h/j/k/l`       | Focus left, down, up, right (`Alt+Shift+h/j/k/l` moves)    |
+| `Alt+1..9`          | Switch workspace (`Alt+Shift+1..9` sends the window there) |
+| `Alt+a`, then a key | Launch an app: `b` browser, `e` nvim, `f` yazi, `s` Slack  |
+| `Alt+g`, then a key | Jump to an app's window, launching it if it isn't open     |
 
 While a mode like `Alt+a` is active, the Zebar bar lists its keys. In WezTerm, `Ctrl+a` is a tmux-style leader for tabs, splits and workspaces. Every bind is in [docs/keybinds.md](docs/keybinds.md).
 
-Why Alt and not the Windows key? Windows reserves `Win+L` to lock the screen and nothing can take it over, so a Hyprland-style `Win+l` would never work. Alt also gets through remote desktop clients without grabbing the keyboard. When an app needs its own Alt shortcuts, `Alt+Shift+P` pauses GlazeWM.
+### Why is Alt the leader key?
+
+Windows reserves `Win+L` to lock the screen and nothing can take it over, so a Hyprland-style `Win+l` would never work. Alt also gets through remote desktop clients without grabbing the keyboard. When an app needs its own Alt shortcuts, `Alt+Shift+P` pauses GlazeWM.
 
 ## 🧰 What's Inside
 
@@ -88,7 +93,7 @@ Picked at install time, or later with `just pick`. Desktop-only groups are hidde
 | `editors`       | VS Code                                            |      x       |
 | `docker`        | Docker Desktop                                     |      x       |
 
-Apps specific to one machine can go in `~/.config/dotfiles-windows/packages.ini`, which joins the picker without touching the repo.
+Apps specific to one machine can go in `~/.config/oasis-dots-windows/packages.ini`, which joins the picker without touching the repo.
 
 ## 🛠️ Everyday Use
 
@@ -106,6 +111,8 @@ This repo points at my Linux dotfiles. To use your own, fork it, then:
 1. Change `$repo_url` in `bootstrap.ps1` and the `irm` URL above to your fork.
 2. Point `repos` in `manifest.psd1` at your Linux dotfiles, and update each link's `source` to where those configs live in your repo.
 3. Adjust the Windows-only configs in `home/` (GlazeWM, Zebar, WezTerm, the pwsh profile) to taste.
+
+Like it? Give it a star, or [buy me a coffee](https://ko-fi.com/uphillsolutions).
 
 ## 🌐 Remote Access
 
