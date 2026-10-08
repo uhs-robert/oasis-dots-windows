@@ -1,0 +1,47 @@
+/* The popup shares the bar's palette and font from styles.css. */
+#root {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 24px;
+  box-sizing: border-box;
+  background: none;
+  border: 0;
+}
+
+.panel {
+  padding: 12px 18px 14px;
+  border: 1px solid var(--surface_high);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.panel_title {
+  margin-bottom: 8px;
+  color: var(--yellow);
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Column-major fill, so related keys stay together down a column. */
+.entries {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(4, auto);
+  column-gap: 28px;
+  row-gap: 3px;
+  white-space: nowrap;
+}
+
+.entry_key {
+  display: inline-block;
+  min-width: 5ch;
+  margin-right: 6px;
+  color: var(--yellow);
+  font-weight: bold;
+}
+
+.entry_label {
+  color: var(--fg);
+}

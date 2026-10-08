@@ -119,7 +119,7 @@ binding_modes:
       - commands: ['wm-disable-binding-mode --name resize']
         bindings: ['escape', 'enter', 'alt+r']
 
-  # Each key launches an app, then leaves the mode. The Zebar bar lists the keys.
+  # Each key launches an app, then leaves the mode. The Zebar which-key popup lists the keys.
   - name: 'apps'
     keybindings:
       # browser
