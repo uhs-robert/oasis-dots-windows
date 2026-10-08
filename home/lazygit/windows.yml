@@ -1,0 +1,6 @@
+# Merged after oasis-dots' config.yml via LG_CONFIG_FILE; only what breaks on Windows is overridden.
+# Lazygit runs these through cmd.exe, which expands %DOTFILES_WINDOWS% itself, so no templating is needed.
+os:
+  edit: 'pwsh -NoProfile -File "%DOTFILES_WINDOWS%\home\lazygit\lazygit-edit.ps1" {{filename}}'
+  editAtLine: 'pwsh -NoProfile -File "%DOTFILES_WINDOWS%\home\lazygit\lazygit-edit.ps1" {{filename}} {{line}}'
+  editAtLineAndWait: 'pwsh -NoProfile -File "%DOTFILES_WINDOWS%\home\lazygit\lazygit-edit.ps1" {{filename}} {{line}}'
