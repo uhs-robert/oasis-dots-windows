@@ -120,4 +120,6 @@ On a remote desktop, GlazeWM's Alt binds work without any client setup, but the 
 
 ## ⚠️ Known Limitations
 
+- **Binds do nothing while an admin window has focus.** Windows hides keystrokes in elevated windows from non-elevated apps like GlazeWM. Close the admin PowerShell you installed from, or click another window first.
+- **Windows Server needs admin for the bar.** Zebar needs `wlanapi.dll`, which Windows Server only has with the Wireless LAN Service feature. An elevated install adds it; without admin, Zebar fails to start.
 - **Paths with spaces break GlazeWM launches.** GlazeWM splits commands on whitespace, so a repo path containing a space breaks the launch binds.
