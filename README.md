@@ -120,6 +120,4 @@ On a remote desktop, GlazeWM's Alt binds work without any client setup, but the 
 
 ## ⚠️ Known Limitations
 
-- **Not yet run on real Windows.** Everything parses and lints, but GlazeWM, Zebar, WezTerm, Yazi and Nushell have only been checked off-machine.
 - **Paths with spaces break GlazeWM launches.** GlazeWM splits commands on whitespace, so a repo path containing a space breaks the launch binds.
-- **Yazi's lazygit plugin doesn't change directory on exit.** It shells out to the Unix `test` command, which Windows lacks.

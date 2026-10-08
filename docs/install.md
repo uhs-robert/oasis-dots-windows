@@ -222,7 +222,7 @@ home/
   powershell/          profile.ps1, functions/ (y, f, s, j, jg, ff, ssh, ...)
   nushell/             config.nu, env.nu
   yazi/                keymap, yazi, theme, package, init, plugins/jump-to.yazi
-  lazygit/             windows.yml, lazygit-edit.ps1
+  lazygit/             windows.yml, lazygit-edit.ps1, yazi-lazygit-cd.ps1
 docs/
   remote-access.md     RDP and other remote desktops, SSH
   keybinds.md          all keybinds by app
