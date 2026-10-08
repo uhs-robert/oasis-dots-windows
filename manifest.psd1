@@ -28,7 +28,6 @@
     @{ source = '{repo}\home\yazi\package.toml'; target = '%APPDATA%\yazi\config\package.toml' }
     @{ source = '{repo}\home\yazi\init.lua'; target = '%APPDATA%\yazi\config\init.lua' }
     @{ source = '{oasis-dots}\home\yazi\.config\yazi\plugins\folder-rules.yazi'; target = '%APPDATA%\yazi\config\plugins\folder-rules.yazi' }
-    @{ source = '{oasis-dots}\home\yazi\.config\yazi\plugins\lazygit.yazi'; target = '%APPDATA%\yazi\config\plugins\lazygit.yazi' }
     @{ source = '{repo}\home\yazi\plugins\jump-to.yazi'; target = '%APPDATA%\yazi\config\plugins\jump-to.yazi' }
     @{ source = '{oasis.nvim}\extras\yazi\themes\dark\flavors\oasis-{theme}-dark.yazi'; target = '%APPDATA%\yazi\config\flavors\oasis-{theme}-dark.yazi' }
     @{ source = '{neovim}'; target = '%LOCALAPPDATA%\nvim' }

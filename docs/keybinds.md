@@ -191,4 +191,4 @@ Explorer, run executable), `z u` (unzip), `T` (pane toggles), `u` (restore delet
 | `g y` | Yazi config folder |
 | `g r` | Git root of the current folder |
 | `g w` | Git file changes |
-| `g l` | Lazygit (lazygit.yazi) |
+| `g l` | Lazygit, then cd to the repo it ended in |
