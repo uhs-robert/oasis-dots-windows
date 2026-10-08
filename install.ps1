@@ -130,7 +130,8 @@ if (Test-StepEnabled 'links') {
   Write-Step 'Linking configs'
   foreach ($link in $manifest.links) {
     if (Test-ManifestCondition $link $active_names) { Install-ManifestLink $link $context | Out-Null }
-    else { Write-Skip "$($link.target) (needs $($link.when))" }
+    # A package deselected since the last run leaves its link behind; only links into this repo are removed.
+    else { Remove-ManifestLink $link $context }
   }
 }
 
