@@ -1,12 +1,14 @@
 # Keybinds
 
 Keybinds for GlazeWM, WezTerm, PowerShell and Yazi, taken from the config files in `home/`.
-`Alt` is the GlazeWM leader and `Ctrl+a` is the WezTerm leader. See [rdp.md](rdp.md) for how these
-reach the remote session.
+`Alt` is the GlazeWM leader and `Ctrl+a` is the WezTerm leader. These apply in desktop mode (headless installs no GUI). See
+[remote-access.md](remote-access.md) for how they reach a remote session.
 
 ## GlazeWM
 
-Source: `home/glazewm/config.yaml`.
+Source: `home/glazewm/config.yaml`. The leader is Alt everywhere, including on a local machine:
+Win+L is reserved by Windows and cannot be overridden. If an app needs the Alt combos itself, pause
+GlazeWM with `Alt+Shift+p`.
 
 ### Global
 

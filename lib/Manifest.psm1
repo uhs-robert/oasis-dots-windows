@@ -12,6 +12,10 @@ function Get-StateDir {
   Join-Path $HOME '.local/state/dotfiles-windows'
 }
 
+function Get-LocalPackageFile {
+  Join-Path $HOME '.config/dotfiles-windows/packages.ini'
+}
+
 function Get-ScoopRoot {
   if ($env:SCOOP) { $env:SCOOP } else { Join-Path $HOME 'scoop' }
 }
@@ -53,8 +57,9 @@ function Expand-ManifestPath([string] $path, $context) {
 }
 
 # `when` names either a group ("ai") or one package ("ai/claude-code").
-function Test-ManifestCondition($entry, [string[]] $active_names) {
-  -not $entry.when -or $entry.when -in $active_names
+# `mode` limits an entry to one install mode; without it the entry applies in every mode.
+function Test-ManifestCondition($entry, [string[]] $active_names, [string] $install_mode) {
+  (-not $entry.when -or $entry.when -in $active_names) -and (-not $entry.mode -or $entry.mode -eq $install_mode)
 }
 
 function Sync-Repo($repo, $context) {
@@ -251,6 +256,6 @@ function Remove-ManifestEnvironmentVariable($entry) {
   Write-Ok "cleared $($entry.name)"
 }
 
-Export-ModuleMember -Function Test-Elevated, Get-StateDir, Get-ScoopRoot, Read-Manifest, New-ManifestContext,
+Export-ModuleMember -Function Test-Elevated, Get-StateDir, Get-LocalPackageFile, Get-ScoopRoot, Read-Manifest, New-ManifestContext,
   Expand-ManifestPath, Test-ManifestCondition, Sync-Repo, Install-ManifestLink, Remove-ManifestLink,
   Set-ManifestEnvironmentVariable, Remove-ManifestEnvironmentVariable

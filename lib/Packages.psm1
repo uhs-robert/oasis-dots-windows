@@ -8,15 +8,17 @@ Reads a packages/*.ini file into one entry per package.
 Each entry carries its [group], a short name for display and selection, and
 where it installs from. Scoop entries are written `bucket/app`; other sources
 use a `source:id` prefix. `name = source:id` overrides the display name.
+`group_prefix` is prepended to every [group]; `default_group` names entries
+that appear before any [group] header.
 #>
-function Read-PackageIni([string] $path) {
-  $group = $null
+function Read-PackageIni([string] $path, [string] $group_prefix = '', [string] $default_group = $null) {
+  $group = $default_group
   foreach ($raw_line in Get-Content -LiteralPath $path) {
     $line = ($raw_line -replace '[#;].*$', '').Trim()
     if (-not $line) { continue }
 
     if ($line -match '^\[(.+)\]$') {
-      $group = $Matches[1]
+      $group = $group_prefix + $Matches[1]
       continue
     }
 
@@ -39,6 +41,13 @@ function Read-PackageIni([string] $path) {
     $entry | Add-Member key "$group/$($entry.name)"
     $entry
   }
+}
+
+# A per-machine file in the same format as packages/*.ini. Its groups are
+# prefixed with `local-` so they cannot collide with the repo's groups.
+function Read-LocalPackageIni([string] $path) {
+  if (-not (Test-Path -LiteralPath $path)) { return @() }
+  Read-PackageIni $path -group_prefix 'local-' -default_group 'local'
 }
 
 $script:installed_scoop_apps = $null
@@ -109,4 +118,4 @@ function Install-Package($entry) {
   }
 }
 
-Export-ModuleMember -Function Read-PackageIni, Install-Package, Test-PackageInstalled
+Export-ModuleMember -Function Read-PackageIni, Read-LocalPackageIni, Install-Package, Test-PackageInstalled

@@ -4,11 +4,11 @@ set shell := ["pwsh", "-NoProfile", "-Command"]
 install *args:
   ./install.ps1 {{args}}
 
-# Pull this repo and the cloned config repos, update Scoop apps, re-apply.
+# Pull this repo and the cloned config repos, update packages (topgrade if installed, else Scoop), re-apply.
 update:
   git pull --ff-only
   Get-ChildItem repos -Directory -ErrorAction SilentlyContinue | ForEach-Object { git -C $_.FullName pull --ff-only }
-  scoop update *
+  if (Get-Command topgrade -ErrorAction SilentlyContinue) { topgrade } else { scoop update * }
   ./install.ps1 -unattended
 
 # Re-open the optional package picker.

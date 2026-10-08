@@ -6,8 +6,11 @@ Installs packages, links configs and applies Windows tweaks.
 .PARAMETER select
 Optional-package picker tokens (group or group/name, comma separated). Skips the picker.
 
+.PARAMETER mode
+desktop (GUI and CLI) or headless (CLI only, for SSH). Saved for later runs; asked on the first run.
+
 .PARAMETER unattended
-Reuse the saved selection and never prompt.
+Reuse the saved selection and mode and never prompt. Fails on a first run without -mode.
 
 .PARAMETER reselect
 Show the picker even with -unattended.
@@ -17,6 +20,8 @@ Run just these steps: repos, packages, links, environment, system, post.
 #>
 [CmdletBinding()]
 param(
+  [ValidateSet('desktop', 'headless')]
+  [string] $mode,
   [string[]] $select,
   [switch] $unattended,
   [switch] $reselect,
@@ -33,6 +38,7 @@ $manifest = Read-Manifest (Join-Path $PSScriptRoot 'manifest.psd1')
 $context = New-ManifestContext $manifest $PSScriptRoot
 $is_elevated = Test-Elevated
 $selection_file = Join-Path $context.state_dir 'selection.txt'
+$mode_file = Join-Path $context.state_dir 'mode.txt'
 
 function Test-StepEnabled([string] $step) { $step -in $only }
 
@@ -52,6 +58,24 @@ function Read-SavedSelection {
 function Save-Selection([string[]] $tokens) {
   New-Item -ItemType Directory -Path $context.state_dir -Force | Out-Null
   Set-Content -LiteralPath $selection_file -Value $tokens
+}
+
+function Resolve-InstallMode {
+  if ($mode) {
+    New-Item -ItemType Directory -Path $context.state_dir -Force | Out-Null
+    Set-Content -LiteralPath $mode_file -Value $mode
+    return $mode
+  }
+
+  $saved = if (Test-Path -LiteralPath $mode_file) { "$(Get-Content -LiteralPath $mode_file -TotalCount 1)".Trim() }
+  if ($saved -in 'desktop', 'headless') { return $saved }
+  if ($unattended) { throw 'No install mode saved yet: pass -mode desktop or -mode headless.' }
+
+  $picked = Select-InstallMode
+  if (-not $picked) { throw 'No install mode chosen: pass -mode desktop or -mode headless.' }
+  New-Item -ItemType Directory -Path $context.state_dir -Force | Out-Null
+  Set-Content -LiteralPath $mode_file -Value $picked
+  $picked
 }
 
 function Get-SelectionTokens($optional_entries) {
@@ -82,8 +106,17 @@ function Invoke-SystemScript([string] $name) {
   if ($changed) { Write-Ok "$name applied" } else { Write-Skip "$name already set" }
 }
 
+$install_mode = Resolve-InstallMode
+$is_desktop = $install_mode -eq 'desktop'
+Write-Step "Install mode: $install_mode"
+
 $required_entries = @(Read-PackageIni (Join-Path $PSScriptRoot 'packages/required.ini'))
 $optional_entries = @(Read-PackageIni (Join-Path $PSScriptRoot 'packages/optional.ini'))
+if ($is_desktop) {
+  $required_entries += @(Read-PackageIni (Join-Path $PSScriptRoot 'packages/gui-required.ini'))
+  $optional_entries += @(Read-PackageIni (Join-Path $PSScriptRoot 'packages/gui-optional.ini'))
+}
+$optional_entries += @(Read-LocalPackageIni (Get-LocalPackageFile))
 
 if ((Test-StepEnabled 'repos') -or (Test-StepEnabled 'links') -or (Test-StepEnabled 'post')) {
   Write-Step 'Syncing repos'
@@ -129,8 +162,8 @@ if ($is_elevated -and ((Test-StepEnabled 'links') -or (Test-StepEnabled 'system'
 if (Test-StepEnabled 'links') {
   Write-Step 'Linking configs'
   foreach ($link in $manifest.links) {
-    if (Test-ManifestCondition $link $active_names) { Install-ManifestLink $link $context | Out-Null }
-    # A package deselected since the last run leaves its link behind; only links into this repo are removed.
+    if (Test-ManifestCondition $link $active_names $install_mode) { Install-ManifestLink $link $context | Out-Null }
+    # A package deselected or a mode switched since the last run leaves its link behind; only links into this repo are removed.
     else { Remove-ManifestLink $link $context }
   }
 }
@@ -138,13 +171,14 @@ if (Test-StepEnabled 'links') {
 if (Test-StepEnabled 'environment') {
   Write-Step 'Setting environment variables'
   foreach ($entry in $manifest.environment) {
-    if (Test-ManifestCondition $entry $active_names) { Set-ManifestEnvironmentVariable $entry $context }
+    if (Test-ManifestCondition $entry $active_names $install_mode) { Set-ManifestEnvironmentVariable $entry $context }
+    elseif ($entry.mode -and $entry.mode -ne $install_mode) { Remove-ManifestEnvironmentVariable $entry }
   }
 }
 
 if (Test-StepEnabled 'system') {
   Write-Step 'Applying system tweaks'
-  $system_scripts = @('developer-mode', 'explorer', 'taskbar', 'keyboard')
+  $system_scripts = if ($is_desktop) { @('developer-mode', 'explorer', 'taskbar', 'keyboard') } else { @('developer-mode', 'explorer', 'ssh-default-shell') }
   if ($is_elevated) {
     foreach ($name in $system_scripts | Where-Object { -not ($developer_mode_done -and $_ -eq 'developer-mode') }) {
       Invoke-SystemScript $name
@@ -187,8 +221,13 @@ if (Test-StepEnabled 'post') {
   }
 
   $glazewm_exe = Join-Path (Get-ScoopRoot) 'apps/glazewm/current/glazewm.exe'
-  if (Test-Path -LiteralPath $glazewm_exe) {
-    $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) 'GlazeWM.lnk'
+  $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) 'GlazeWM.lnk'
+  # A machine switched to headless would otherwise keep starting GlazeWM at sign-in.
+  if (-not $is_desktop -and (Test-Path -LiteralPath $shortcut_path)) {
+    Remove-Item -LiteralPath $shortcut_path
+    Write-Ok 'removed GlazeWM from Startup'
+  }
+  if ($is_desktop -and (Test-Path -LiteralPath $glazewm_exe)) {
     if (-not (Test-Path -LiteralPath $shortcut_path)) {
       $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut_path)
       $shortcut.TargetPath = $glazewm_exe
