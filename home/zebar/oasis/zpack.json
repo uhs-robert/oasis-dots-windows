@@ -2,7 +2,7 @@
   "$schema": "https://github.com/glzr-io/zebar/raw/v3.0.0/resources/zpack-schema.json",
   "name": "oasis",
   "version": "0.1.0",
-  "description": "Oasis Moonlight top bar for GlazeWM, with a which-key hint for binding modes.",
+  "description": "Oasis Moonlight top bar for GlazeWM, with a which-key popup for binding modes.",
   "tags": ["topbar"],
   "previewImages": [],
   "repositoryUrl": "",
@@ -33,6 +33,41 @@
           "height": "36px",
           "monitorSelection": {
             "type": "all"
+          },
+          "dockToEdge": {
+            "enabled": false,
+            "edge": null,
+            "windowMargin": "0px"
+          }
+        }
+      ]
+    },
+    {
+      "name": "whichkey",
+      "htmlPath": "./whichkey.html",
+      "zOrder": "top_most",
+      "shownInTaskbar": false,
+      "focused": false,
+      "resizable": false,
+      "transparent": true,
+      "includeFiles": ["*.html", "*.css"],
+      "caching": {
+        "defaultDuration": 604800,
+        "rules": []
+      },
+      "privileges": {
+        "shellCommands": []
+      },
+      "presets": [
+        {
+          "name": "default",
+          "anchor": "bottom_center",
+          "offsetX": "0px",
+          "offsetY": "0px",
+          "width": "640px",
+          "height": "170px",
+          "monitorSelection": {
+            "type": "primary"
           },
           "dockToEdge": {
             "enabled": false,

@@ -55,7 +55,7 @@ GlazeWM tiles every window, driven by Alt:
 | `Alt+a`, then a key | Launch an app: `b` browser, `e` nvim, `f` yazi, `s` Slack  |
 | `Alt+g`, then a key | Jump to an app's window, launching it if it isn't open     |
 
-While a mode like `Alt+a` is active, the Zebar bar lists its keys. In WezTerm, `Ctrl+a` is a tmux-style leader for tabs, splits and workspaces. Every bind is in [docs/keybinds.md](docs/keybinds.md).
+While a mode like `Alt+a` is active, a Zebar popup lists its keys. In WezTerm, `Ctrl+a` is a tmux-style leader for tabs, splits and workspaces. Every bind is in [docs/keybinds.md](docs/keybinds.md).
 
 ### Why is Alt the leader key?
 

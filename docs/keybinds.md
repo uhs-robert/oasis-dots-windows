@@ -87,8 +87,8 @@ Each key focuses the app's window, or starts it when none is open. Leaves the mo
 | `Tab` | Recent workspace |
 | `Esc` / `Alt+g` | Leave go mode |
 
-The Zebar bar (top edge) shows the active mode and a short list of its keys, so the modes can be used
-without memorizing them. The full list is this page.
+A Zebar which-key popup (bottom center of the primary monitor) lists the active mode's keys, and the bar
+shows the mode name, so the modes can be used without memorizing them. The full list is this page.
 
 ## WezTerm
 

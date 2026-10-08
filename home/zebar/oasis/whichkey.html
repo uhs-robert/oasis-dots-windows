@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    <link rel="stylesheet" type="text/css" href="./whichkey.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="module">
+      import * as zebar from 'https://esm.sh/zebar@3.0';
+
+      // What each binding mode's keys do, kept in sync with binding_modes in
+      // home/glazewm/config.yaml.
+      const mode_hints = {
+        resize: [
+          ['h j k l', 'size 2%'],
+          ['H J K L', 'size 10%'],
+          ['esc enter', 'done'],
+        ],
+        apps: [
+          ['t', 'WezTerm'], ['e', 'nvim'], ['f', 'yazi'], ['u', 'gdu'],
+          ['c', 'qalc'], ['b', 'Firefox'], ['q', 'qutebrowser'], ['s', 'Slack'],
+          ['d', 'Discord'], ['m', 'Betterbird'], ['g', 'GIMP'], ['i', 'Inkscape'],
+          ['w', 'Writer'], ['x', 'Calc'],
+        ],
+        go: [
+          ['t', 'WezTerm'], ['f', 'yazi'], ['c', 'nvim (dotfiles)'], ['b', 'Firefox'],
+          ['q', 'qutebrowser'], ['m', 'Betterbird'], ['s', 'Slack'], ['d', 'Discord'],
+          ['tab', 'last workspace'],
+        ],
+      };
+
+      const root = document.getElementById('root');
+      const widget_window = zebar.currentWidget().tauriWindow;
+
+      // The window stays up and click-through, and is simply empty outside a mode.
+      // Hiding and showing it instead would risk show() taking focus, and resize
+      // mode acts on the focused window.
+      widget_window.setIgnoreCursorEvents(true).catch(() => {});
+
+      function el(tag, class_name, text) {
+        const node = document.createElement(tag);
+        node.className = class_name;
+        node.textContent = text;
+        return node;
+      }
+
+      function panel(binding_mode, hints) {
+        const entries = el('div', 'entries', '');
+        for (const [key, label] of hints) {
+          const entry = el('div', 'entry', '');
+          entry.append(el('span', 'entry_key', key), el('span', 'entry_label', label));
+          entries.append(entry);
+        }
+        const container = el('div', 'panel', '');
+        container.append(
+          el('div', 'panel_title', binding_mode.displayName ?? binding_mode.name),
+          entries,
+        );
+        return container;
+      }
+
+      const glazewm = zebar.createProvider({ type: 'glazewm' });
+
+      function update(output) {
+        const binding_mode = output?.bindingModes?.[0];
+        const hints = binding_mode && mode_hints[binding_mode.name];
+        if (hints) {
+          root.replaceChildren(panel(binding_mode, hints));
+        } else {
+          root.replaceChildren();
+        }
+      }
+
+      glazewm.onOutput(update);
+    </script>
+  </body>
+</html>

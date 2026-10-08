@@ -11,27 +11,6 @@
     <script type="module">
       import * as zebar from 'https://esm.sh/zebar@3.0';
 
-      // Which-key substitute: what each binding mode's keys do, kept in sync
-      // with binding_modes in home/glazewm/config.yaml.
-      const mode_hints = {
-        resize: [
-          ['h j k l', 'size'],
-          ['shift', 'bigger'],
-          ['esc', 'done'],
-        ],
-        apps: [
-          ['b', 'firefox'], ['q', 'qute'], ['e', 'nvim'], ['f', 'yazi'],
-          ['m', 'mail'], ['s', 'slack'], ['d', 'discord'], ['c', 'qalc'],
-          ['g', 'gimp'], ['i', 'inkscape'], ['w', 'writer'], ['x', 'calc'],
-          ['t', 'term'], ['u', 'gdu'],
-        ],
-        go: [
-          ['t', 'term'], ['b', 'browser'], ['q', 'qute'], ['f', 'files'],
-          ['m', 'mail'], ['s', 'slack'], ['d', 'discord'], ['c', 'config'],
-          ['tab', 'last ws'],
-        ],
-      };
-
       const providers = zebar.createProviderGroup({
         glazewm: { type: 'glazewm' },
         cpu: { type: 'cpu' },
@@ -52,6 +31,9 @@
         offline: '\u{f05aa}',
         clock: '',
       };
+
+      const flow_launcher_command =
+        'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\\home\\glazewm\\scripts\\launch.ps1 -shortcut Flow*Launcher';
 
       function el(tag, class_name, text, attributes) {
         const node = document.createElement(tag);
@@ -85,14 +67,7 @@
       }
 
       function mode_section(binding_mode) {
-        const container = el('div', 'mode');
-        container.append(el('span', 'mode_name', binding_mode.displayName ?? binding_mode.name));
-        for (const [key, label] of mode_hints[binding_mode.name] ?? []) {
-          const hint = el('span', 'hint');
-          hint.append(el('span', 'hint_key', key), el('span', 'hint_label', label));
-          container.append(hint);
-        }
-        return container;
+        return el('span', 'mode_name', binding_mode.displayName ?? binding_mode.name);
       }
 
       function network_icon(network) {
@@ -111,7 +86,12 @@
         const app = el('div', 'app');
 
         const left = el('div', 'left');
-        left.append(el('span', 'logo', icons.logo));
+        // Flow Launcher is single-instance, so relaunching it shows its search box.
+        left.append(
+          glazewm
+            ? el('button', 'logo', icons.logo, { 'data-command': flow_launcher_command })
+            : el('span', 'logo', icons.logo),
+        );
         if (glazewm) left.append(workspaces_section(glazewm));
 
         const center = el('div', 'center');
