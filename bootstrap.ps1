@@ -3,6 +3,7 @@
 # `irm | iex` cannot take parameters: pass install.ps1 flags through the
 # OASIS_DOTS_WINDOWS_ARGS environment variable (e.g. '-unattended'), or run
 # install.ps1 directly. A local copy forwards its own arguments as well.
+# OASIS_DOTS_WINDOWS_BRANCH checks out a branch other than main, for testing a PR.
 
 # The body runs in its own scope so that, under `irm | iex`, preferences and helper
 # functions do not leak into the caller's interactive session.
@@ -65,12 +66,19 @@
     $repo_dir = if ($env:OASIS_DOTS_WINDOWS) { $env:OASIS_DOTS_WINDOWS } else { Join-Path $HOME 'oasis-dots-windows' }
   }
 
+  $branch = $env:OASIS_DOTS_WINDOWS_BRANCH
+
   Write-Step "Repo at $repo_dir"
   if (Test-Path (Join-Path $repo_dir '.git')) {
+    if ($branch) {
+      git -C $repo_dir fetch --quiet origin $branch
+      git -C $repo_dir checkout --quiet $branch
+      if ($LASTEXITCODE -ne 0) { throw "could not check out branch $branch" }
+    }
     git -C $repo_dir pull --ff-only
     if ($LASTEXITCODE -ne 0) { Write-Warning 'pull failed, continuing with the current checkout' }
   } elseif (-not (Test-Path (Join-Path $repo_dir 'install.ps1'))) {
-    git clone $repo_url $repo_dir
+    if ($branch) { git clone --branch $branch $repo_url $repo_dir } else { git clone $repo_url $repo_dir }
     if ($LASTEXITCODE -ne 0) { throw 'git clone failed' }
   }
 
