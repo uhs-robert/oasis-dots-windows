@@ -148,6 +148,12 @@ if (Test-StepEnabled 'packages') {
   Update-SessionPath
 }
 
+# Re-checked rather than tracked per install: a failure scrolls past among hundreds of lines of Scoop output.
+$missing_entries = @()
+if (Test-StepEnabled 'packages') {
+  $missing_entries = @($required_entries + $selected_entries | Where-Object { -not (Test-PackageInstalled $_) })
+}
+
 $installed_entries = $required_entries + $selected_entries
 $active_names = @($installed_entries.group) + @($installed_entries.key)
 
@@ -239,6 +245,13 @@ if (Test-StepEnabled 'post') {
       if ((Read-Host 'Start GlazeWM now? (y/N)') -match '^y') { Start-Process $glazewm_exe }
     }
   }
+}
+
+if ($missing_entries.Count -gt 0) {
+  Write-Step "Done, but $($missing_entries.Count) package(s) did not install"
+  foreach ($entry in $missing_entries) { Write-Fail $entry.key }
+  Write-Warn 'fix the cause above, then re-run: ./install.ps1 -unattended'
+  exit 1
 }
 
 Write-Step 'Done'
