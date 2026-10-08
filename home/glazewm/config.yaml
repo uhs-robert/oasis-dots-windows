@@ -222,7 +222,10 @@ keybindings:
   - commands: ['toggle-minimized']
     bindings: ['alt+m']
   - commands: ['close']
-    bindings: ['alt+shift+q']
+    bindings: ['alt+x', 'alt+shift+q']
+  # The CLSID is the shell's own Run dialog (what Win+R opens).
+  - commands: ['shell-exec explorer.exe shell:::{2559a1f3-21d7-11d4-bdaf-00c04f60b9f0}']
+    bindings: ['alt+o']
 
   - commands: ['wm-exit']
     bindings: ['alt+shift+e']

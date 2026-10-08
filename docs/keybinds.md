@@ -27,7 +27,8 @@ GlazeWM with `Alt+Shift+p`.
 | `Alt+Shift+Space` | Toggle floating (centered) |
 | `Alt+f` | Toggle fullscreen |
 | `Alt+m` | Toggle minimized |
-| `Alt+Shift+q` | Close window |
+| `Alt+x` or `Alt+Shift+q` | Close window |
+| `Alt+o` | Windows Run dialog (same as `Win+R`) |
 | `Alt+Shift+p` | Pause or resume GlazeWM |
 | `Alt+Shift+r` | Reload config |
 | `Alt+Shift+w` | Redraw |
