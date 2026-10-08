@@ -46,6 +46,26 @@ function Select-OptionalPackages($entries, [string[]] $previous = @()) {
   @($picked | Where-Object { $_ -ne $none_line } | ForEach-Object { ConvertFrom-PickerLine $_ })
 }
 
+# Returns $null when the picker is cancelled. fzf is usually not installed
+# yet on a first run, so a plain prompt is the fallback.
+function Select-InstallMode {
+  $mode_lines = @(
+    'desktop   GlazeWM, Zebar, WezTerm, Flow Launcher and the GUI apps; for a local machine or a remote desktop'
+    'headless  CLI tools and configs only; for SSH access'
+  )
+
+  if (Get-Command fzf -ErrorAction SilentlyContinue) {
+    $picked = $mode_lines | fzf --layout=reverse --height=20% --prompt 'mode> ' --header 'ENTER picks the install mode'
+    if ($LASTEXITCODE -ne 0 -or -not $picked) { return $null }
+    return ($picked -split '\s+')[0]
+  }
+
+  Write-Host 'Install mode:'
+  $mode_lines | ForEach-Object { Write-Host "  $_" }
+  $answer = (Read-Host 'Mode (desktop/headless)').Trim().ToLower()
+  if ($answer -in 'desktop', 'headless') { $answer } else { $null }
+}
+
 function Resolve-Selection($entries, [string[]] $tokens) {
   $known = @($entries.group) + @($entries.key)
   foreach ($unknown in $tokens | Where-Object { $_ -notin $known }) {
@@ -54,4 +74,4 @@ function Resolve-Selection($entries, [string[]] $tokens) {
   $entries | Where-Object { $_.group -in $tokens -or $_.key -in $tokens }
 }
 
-Export-ModuleMember -Function Select-OptionalPackages, Resolve-Selection
+Export-ModuleMember -Function Select-InstallMode, Select-OptionalPackages, Resolve-Selection

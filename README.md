@@ -13,11 +13,31 @@
 </p>
 <p align="center">Windows counterpart to <a href="oasis-dots](https://github.com/uhs-robert">oasis-dots</a>, the Arch Linux dotfiles.</p>
 
-One command on a fresh Windows 10/11 machine installs the tools and links the configs.
+One command on a fresh Windows 10/11 machine installs the tools and links the configs, either as a
+full desktop or as a headless CLI setup for SSH (see [Modes](#modes)).
 
 The desktop is GlazeWM (tiling, Alt leader) with a Zebar bar and Flow Launcher. The terminal is
 WezTerm running PowerShell 7 by default, with Nushell as an optional shell. The theme is Oasis
 Moonlight (dark).
+
+## Modes
+
+The installer runs in one of two modes, chosen on the first run and saved to
+`$HOME\.local\state\dotfiles-windows\mode.txt`:
+
+| Mode       | For                                                  | Installs and sets up                                                                                                  |
+| ---------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `desktop`  | A local machine, or a machine reached by remote desktop | Everything: GlazeWM, Zebar, Flow Launcher, WezTerm, the Nerd Font, the GUI optional groups, the taskbar and keyboard tweaks. |
+| `headless` | A machine used over SSH                              | CLI packages and configs only. No GUI packages, links, variables or tweaks. Sets pwsh as the OpenSSH default shell.   |
+
+`./install.ps1 -mode desktop` (or `headless`) overrides and saves the mode. Re-runs reuse it. With
+`-unattended` and no saved mode the installer stops and asks for `-mode`. Switching from desktop to
+headless removes the desktop-only links and variables.
+
+The GlazeWM leader is Alt in both desktop cases. Win+L is reserved by Windows and cannot be
+overridden, so a Win leader would not work even on a local machine. Alt can collide with app-level Alt
+shortcuts; `Alt+Shift+p` pauses GlazeWM when an app needs its own Alt keys (see
+[docs/keybinds.md](docs/keybinds.md)).
 
 Configs that port unchanged are not copied. They are read from the upstream repos, which are cloned
 into `repos/`:
@@ -56,39 +76,66 @@ cd $HOME\dotfiles-windows
 
 | Flag               | Effect                                                                               |
 | ------------------ | ------------------------------------------------------------------------------------ |
+| `-mode <mode>`     | `desktop` or `headless`. Saved and reused; asked on the first run if omitted.        |
 | `-select <tokens>` | Use these optional-package tokens (comma separated), save them, skip the picker.     |
-| `-unattended`      | Reuse the saved selection and never prompt.                                          |
+| `-unattended`      | Reuse the saved selection and mode and never prompt.                                 |
 | `-reselect`        | Show the picker even with `-unattended`.                                             |
 | `-only <steps>`    | Run only these steps: `repos`, `packages`, `links`, `environment`, `system`, `post`. |
 
 ## Packages
 
 Packages come from Scoop, winget or the PowerShell Gallery. Their definitions are in `packages/`.
+The `gui-` files are only read in desktop mode.
 
-**Required** (`packages/required.ini`) are always installed. They are grouped as installer (git, 7zip,
-fzf, just), desktop (GlazeWM, Zebar, WezTerm, Flow Launcher, JetBrainsMono Nerd Font), shell (pwsh,
-starship, zoxide, lsd, bat, less, fd, ripgrep, PSReadLine, PSFzf), editor (neovim, zig, tree-sitter),
-git (lazygit, delta, difftastic, mergiraf, gh) and files (yazi, ffmpeg, poppler, imagemagick, jq).
+**Required** are always installed:
 
-**Optional** (`packages/optional.ini`) are picked at install time:
+- `packages/required.ini` (both modes): installer (git, 7zip, fzf, just), shell (pwsh, starship,
+  zoxide, lsd, bat, less, fd, ripgrep, PSReadLine, PSFzf), editor (neovim, zig, tree-sitter), git
+  (lazygit, delta, difftastic, mergiraf, gh) and files (yazi, ffmpeg, poppler, imagemagick, jq).
+- `packages/gui-required.ini` (desktop only): desktop (GlazeWM, Zebar, WezTerm, Flow Launcher,
+  JetBrainsMono Nerd Font).
+
+**Optional** are picked at install time. `packages/optional.ini` is offered in both modes:
 
 | Group        | Contents                                           |
 | ------------ | -------------------------------------------------- |
 | `shells`     | nu (Nushell)                                       |
 | `coreutils`  | uutils-coreutils, grep, sed, gawk                  |
-| `desktop`    | hunt-and-peck, sharex                              |
 | `monitoring` | btop, fastfetch, dust, duf, gdu                    |
 | `network`    | xh, doggo, gping, aria2, rclone, yt-dlp            |
 | `utilities`  | tealdeer, qalculate, topgrade                      |
-| `browsers`   | firefox, qutebrowser                               |
-| `comms`      | slack, discord, betterbird                         |
-| `docs`       | sumatrapdf, libreoffice                            |
-| `media`      | mpv, vlc, gimp, inkscape                           |
 | `dev-js`     | nodejs-lts, pnpm, bun, deno                        |
 | `dev-go-py`  | go, python, uv, pipx                               |
 | `dev-lint`   | lua, luarocks, stylua, luacheck, shellcheck, shfmt |
-| `docker`     | Docker Desktop (winget)                            |
 | `ai`         | claude-code, codex                                 |
+
+`packages/gui-optional.ini` is added in desktop mode:
+
+| Group           | Contents                                    |
+| --------------- | ------------------------------------------- |
+| `desktop-tools` | hunt-and-peck, sharex, everything           |
+| `browsers`      | firefox, qutebrowser                        |
+| `comms`         | slack, discord, betterbird                  |
+| `docs`          | sumatrapdf, libreoffice                     |
+| `media`         | mpv, vlc, gimp, inkscape, obs-studio        |
+| `gaming`        | steam, epic, gog, playnite                  |
+| `editors`       | vscode                                      |
+| `docker`        | Docker Desktop (winget)                     |
+
+Group names are unique across all package files, because `when` and the saved selection match on them.
+
+### Per-machine packages
+
+Entries in `$HOME\.config\dotfiles-windows\packages.ini` are added to the optional picker in both
+modes. The format is the same as `packages/optional.ini`. Each `[section]` becomes a group named
+`local-<section>`; entries before any section go in the group `local`. The file is not part of this
+repo, and the installer does not check whether its packages suit the mode.
+
+```ini
+[work]
+main/slack-cli
+extras/zoom
+```
 
 ### The picker
 
@@ -109,7 +156,8 @@ are ignored with a warning. If fzf is missing or the picker is cancelled, the pr
 ## What gets linked and set
 
 `manifest.psd1` is the single list of links and environment variables. Links marked with `when` only
-apply when that group or package is selected.
+apply when that group or package is selected. Entries with `mode = 'desktop'` are skipped in headless
+mode. Those are the WezTerm and Zebar links and `GLAZEWM_CONFIG_PATH`.
 
 | Target                                                                                     | Source                                  | Condition        |
 | ------------------------------------------------------------------------------------------ | --------------------------------------- | ---------------- |
@@ -149,22 +197,24 @@ to `$HOME\.local\state\dotfiles-windows\backups\<timestamp>\`.
   - a linked file falls back to a copy, with a warning. Enable Developer Mode and re-run to make it a link.
 - **System tweaks** only run when elevated. Otherwise the installer prints a warning and skips them.
   Run `./install.ps1 -only system` from an elevated PowerShell later. The tweaks are:
-  - Explorer: show file extensions and hidden files, keep web results out of Start search.
-  - Taskbar: auto-hide, so Zebar owns the top edge.
-  - Keyboard: shortest repeat delay and fastest repeat rate (takes effect at next sign-in).
+  - Explorer (both modes): show file extensions and hidden files, keep web results out of Start search.
+  - Taskbar (desktop): auto-hide, so Zebar owns the top edge.
+  - Keyboard (desktop): shortest repeat delay and fastest repeat rate (takes effect at next sign-in).
+  - SSH default shell (headless): if OpenSSH Server is installed, make pwsh 7 the login shell. It does
+    not install or enable sshd.
 - Scoop and PowerShell Gallery packages, repo sync, the links and the user environment variables do not
   need admin. Some winget packages (Docker Desktop) may still ask for it.
 
 ## Updating
 
 ```powershell
-just update    # git pull this repo, pull repos/*, scoop update *, then install.ps1 -unattended
+just update    # git pull this repo, pull repos/*, topgrade (or scoop update *), then install.ps1 -unattended
 ```
 
 | Recipe               | Does                                                           |
 | -------------------- | -------------------------------------------------------------- |
 | `just install *args` | Full install, picker included. Extra args go to `install.ps1`. |
-| `just update`        | Pull everything and re-apply, without prompts.                 |
+| `just update`        | Pull everything, update packages and re-apply, without prompts. |
 | `just pick`          | Re-open the optional package picker (`-reselect`).             |
 | `just link`          | Re-apply links and environment variables only.                 |
 | `just uninstall`     | Run `uninstall.ps1`.                                           |
@@ -196,9 +246,9 @@ install.ps1            installer: repos, packages, links, environment, system, p
 uninstall.ps1          removes links, env vars and the Startup shortcut
 manifest.psd1          repos, links, environment variables, theme
 justfile               update, pick, link, lint and friends
-packages/              required.ini, optional.ini
+packages/              required.ini, optional.ini, gui-required.ini, gui-optional.ini
 lib/                   PowerShell modules: Log, Manifest, Packages, Picker
-system/                Windows tweaks: developer-mode, explorer, taskbar, keyboard
+system/                Windows tweaks: developer-mode, explorer, taskbar, keyboard, ssh-default-shell
 home/
   glazewm/             config.yaml, scripts/ (focus-or-launch, launch)
   zebar/               settings.json, oasis/ (bar, styles, zpack)
@@ -208,7 +258,7 @@ home/
   yazi/                keymap, yazi, theme, package, init, plugins/jump-to.yazi
   lazygit/             windows.yml, lazygit-edit.ps1
 docs/
-  rdp.md               connecting from Arch Linux over RDP
+  remote-access.md     RDP and other remote desktops, SSH
   keybinds.md          all keybinds by app
 repos/                 created by the installer, git-ignored
 ```
@@ -226,6 +276,6 @@ repos/                 created by the installer, git-ignored
 
 ## More
 
-- [docs/rdp.md](docs/rdp.md): connecting from Arch Linux so Alt combos and the Windows key reach the
-  remote session.
+- [docs/remote-access.md](docs/remote-access.md): RDP and other remote desktops so Alt combos and the
+  Windows key reach the remote session, and SSH for headless mode.
 - [docs/keybinds.md](docs/keybinds.md): keybinds for GlazeWM, WezTerm, PowerShell and Yazi.

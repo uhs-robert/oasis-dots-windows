@@ -1,5 +1,6 @@
 # Tokens: {repo} {repos} {theme} {scoop} {documents} and {<repo-name>} for each repo below.
 # Also a leading ~ and %VAR%. `when` is a package group ("ai") or key ("ai/claude-code").
+# `mode = 'desktop'` limits an entry to desktop installs; without `mode` it applies in every mode.
 # `filter` is a jq expression: the target becomes a filtered copy instead of a symlink.
 @{
   theme = 'moonlight'
@@ -15,12 +16,12 @@
     @{ source = '{oasis-dots}\home\git\.config\git\config'; target = '~\.config\git\config' }
     @{ source = '{oasis-dots}\home\git\.config\git\ignore'; target = '~\.config\git\ignore' }
     @{ source = '{oasis-dots}\home\bat\.config\bat'; target = '%APPDATA%\bat' }
-    @{ source = '{repo}\home\wezterm'; target = '~\.config\wezterm' }
+    @{ source = '{repo}\home\wezterm'; target = '~\.config\wezterm'; mode = 'desktop' }
     @{ source = '{repo}\home\powershell\profile.ps1'; target = '{documents}\PowerShell\Microsoft.PowerShell_profile.ps1' }
     @{ source = '{repo}\home\nushell\config.nu'; target = '%APPDATA%\nushell\config.nu'; when = 'shells/nu' }
     @{ source = '{repo}\home\nushell\env.nu'; target = '%APPDATA%\nushell\env.nu'; when = 'shells/nu' }
-    @{ source = '{repo}\home\zebar\settings.json'; target = '~\.glzr\zebar\settings.json' }
-    @{ source = '{repo}\home\zebar\oasis'; target = '~\.glzr\zebar\oasis' }
+    @{ source = '{repo}\home\zebar\settings.json'; target = '~\.glzr\zebar\settings.json'; mode = 'desktop' }
+    @{ source = '{repo}\home\zebar\oasis'; target = '~\.glzr\zebar\oasis'; mode = 'desktop' }
     @{ source = '{repo}\home\yazi\keymap.toml'; target = '%APPDATA%\yazi\config\keymap.toml' }
     @{ source = '{repo}\home\yazi\yazi.toml'; target = '%APPDATA%\yazi\config\yazi.toml' }
     @{ source = '{repo}\home\yazi\theme.toml'; target = '%APPDATA%\yazi\config\theme.toml' }
@@ -41,7 +42,7 @@
   environment = @(
     @{ name = 'DOTFILES_WINDOWS'; value = '{repo}' }
     @{ name = 'OASIS_THEME'; value = '{theme}' }
-    @{ name = 'GLAZEWM_CONFIG_PATH'; value = '{repo}\home\glazewm\config.yaml' }
+    @{ name = 'GLAZEWM_CONFIG_PATH'; value = '{repo}\home\glazewm\config.yaml'; mode = 'desktop' }
     # lazygit merges comma-separated files, later wins.
     @{ name = 'LG_CONFIG_FILE'; value = '{oasis-dots}\home\lazygit\.config\lazygit\config.yml,{repo}\home\lazygit\windows.yml' }
     @{ name = 'YAZI_FILE_ONE'; value = '{scoop}\apps\git\current\usr\bin\file.exe' }
