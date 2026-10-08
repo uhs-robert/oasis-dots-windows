@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="module">
+      import * as zebar from 'https://esm.sh/zebar@3.0';
+
+      // Which-key substitute: what each binding mode's keys do, kept in sync
+      // with binding_modes in home/glazewm/config.yaml.
+      const mode_hints = {
+        resize: [
+          ['h j k l', 'size'],
+          ['shift', 'bigger'],
+          ['esc', 'done'],
+        ],
+        apps: [
+          ['b', 'firefox'], ['q', 'qute'], ['e', 'nvim'], ['f', 'yazi'],
+          ['m', 'mail'], ['s', 'slack'], ['d', 'discord'], ['c', 'qalc'],
+          ['g', 'gimp'], ['i', 'inkscape'], ['w', 'writer'], ['x', 'calc'],
+          ['t', 'term'], ['u', 'gdu'],
+        ],
+        go: [
+          ['t', 'term'], ['b', 'browser'], ['q', 'qute'], ['f', 'files'],
+          ['m', 'mail'], ['s', 'slack'], ['d', 'discord'], ['c', 'config'],
+          ['tab', 'last ws'],
+        ],
+      };
+
+      const providers = zebar.createProviderGroup({
+        glazewm: { type: 'glazewm' },
+        cpu: { type: 'cpu' },
+        memory: { type: 'memory' },
+        network: { type: 'network' },
+        date: { type: 'date', formatting: 'EEE d MMM  HH:mm' },
+      });
+
+      const root = document.getElementById('root');
+
+      // Nerd Font codepoints (JetBrainsMono Nerd Font).
+      const icons = {
+        logo: '',
+        cpu: '',
+        memory: '',
+        wifi: '',
+        ethernet: '\u{f0200}',
+        offline: '\u{f05aa}',
+        clock: '',
+      };
+
+      function el(tag, class_name, text, attributes) {
+        const node = document.createElement(tag);
+        if (class_name) node.className = class_name;
+        if (text !== undefined && text !== null) node.textContent = text;
+        for (const [name, value] of Object.entries(attributes ?? {})) {
+          node.setAttribute(name, value);
+        }
+        return node;
+      }
+
+      function stat(class_name, icon, text, extra_class) {
+        const node = el('div', class_name);
+        node.append(el('span', 'stat_icon', icon), el('span', extra_class, text));
+        return node;
+      }
+
+      function workspaces_section(glazewm) {
+        const container = el('div', 'workspaces');
+        for (const workspace of glazewm.currentWorkspaces) {
+          const classes = ['workspace'];
+          if (workspace.hasFocus) classes.push('focused');
+          if (workspace.isDisplayed) classes.push('displayed');
+          container.append(
+            el('button', classes.join(' '), workspace.displayName ?? workspace.name, {
+              'data-command': `focus --workspace ${workspace.name}`,
+            }),
+          );
+        }
+        return container;
+      }
+
+      function mode_section(binding_mode) {
+        const container = el('div', 'mode');
+        container.append(el('span', 'mode_name', binding_mode.displayName ?? binding_mode.name));
+        for (const [key, label] of mode_hints[binding_mode.name] ?? []) {
+          const hint = el('span', 'hint');
+          hint.append(el('span', 'hint_key', key), el('span', 'hint_label', label));
+          container.append(hint);
+        }
+        return container;
+      }
+
+      function network_icon(network) {
+        switch (network.defaultInterface?.type) {
+          case 'ethernet':
+            return icons.ethernet;
+          case 'wifi':
+            return icons.wifi;
+          default:
+            return icons.offline;
+        }
+      }
+
+      function render(output) {
+        const { glazewm, cpu, memory, network, date } = output;
+        const app = el('div', 'app');
+
+        const left = el('div', 'left');
+        left.append(el('span', 'logo', icons.logo));
+        if (glazewm) left.append(workspaces_section(glazewm));
+
+        const center = el('div', 'center');
+        const active_mode = glazewm?.bindingModes?.[0];
+        if (active_mode) {
+          center.append(mode_section(active_mode));
+        } else {
+          center.append(el('div', 'title', glazewm?.focusedContainer?.title ?? ''));
+        }
+
+        const right = el('div', 'right');
+        if (glazewm?.isPaused) {
+          right.append(el('button', 'paused', 'PAUSED', { 'data-command': 'wm-toggle-pause' }));
+        }
+        if (network) {
+          right.append(stat('network', network_icon(network), network.defaultGateway?.ssid ?? ''));
+        }
+        if (memory) {
+          right.append(stat('memory', icons.memory, `${Math.round(memory.usage)}%`));
+        }
+        if (cpu) {
+          right.append(
+            stat('cpu', icons.cpu, `${Math.round(cpu.usage)}%`, cpu.usage > 85 ? 'high_usage' : ''),
+          );
+        }
+        if (date) right.append(stat('clock', icons.clock, date.formatted));
+
+        app.append(left, center, right);
+        root.replaceChildren(app);
+      }
+
+      // The bar is rebuilt on every provider update, so a click could land on a
+      // node that was just replaced; pointerdown fires before that can happen.
+      root.addEventListener('pointerdown', event => {
+        const command = event.target.closest('[data-command]')?.dataset.command;
+        if (command) providers.outputMap.glazewm?.runCommand(command);
+      });
+
+      providers.onOutput(() => render(providers.outputMap));
+      render(providers.outputMap);
+    </script>
+  </body>
+</html>
