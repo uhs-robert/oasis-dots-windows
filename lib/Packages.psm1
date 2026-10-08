@@ -52,6 +52,7 @@ function Read-LocalPackageIni([string] $path) {
 
 $script:installed_scoop_apps = $null
 $script:known_buckets = $null
+$script:healthy_buckets = @()
 
 function Get-InstalledScoopApps {
   if ($null -eq $script:installed_scoop_apps) {
@@ -60,14 +61,33 @@ function Get-InstalledScoopApps {
   $script:installed_scoop_apps
 }
 
+function Get-ScoopBucketDir([string] $bucket) {
+  $scoop_root = if ($env:SCOOP) { $env:SCOOP } else { Join-Path $HOME 'scoop' }
+  Join-Path $scoop_root "buckets/$bucket"
+}
+
+# Scoop installed before git existed downloads buckets as plain folders, and `scoop update`
+# then skips them ("is not a git repository"), so a listed bucket can still be empty or stale.
+function Test-ScoopBucketHealthy([string] $bucket) {
+  Test-Path -LiteralPath (Join-Path (Get-ScoopBucketDir $bucket) '.git')
+}
+
 function Add-ScoopBucket([string] $bucket) {
   if ($null -eq $script:known_buckets) {
     $script:known_buckets = @(scoop bucket list 6>$null | ForEach-Object Name)
   }
-  if ($bucket -in $script:known_buckets) { return }
+  if ($bucket -in $script:healthy_buckets) { return }
 
-  scoop bucket add $bucket | Out-Null
-  $script:known_buckets += $bucket
+  if ($bucket -in $script:known_buckets -and -not (Test-ScoopBucketHealthy $bucket)) {
+    Write-Warn "bucket '$bucket' is not a git checkout, re-adding it"
+    scoop bucket rm $bucket | Out-Null
+    $script:known_buckets = @($script:known_buckets | Where-Object { $_ -ne $bucket })
+  }
+  if ($bucket -notin $script:known_buckets) {
+    scoop bucket add $bucket | Out-Null
+    $script:known_buckets += $bucket
+  }
+  $script:healthy_buckets += $bucket
 }
 
 function Test-PackageInstalled($entry) {
@@ -92,7 +112,7 @@ function Install-Package($entry) {
     'scoop' {
       Add-ScoopBucket $entry.bucket
       scoop install "$($entry.bucket)/$($entry.id)"
-      $script:installed_scoop_apps += $entry.id
+      if ($global:LASTEXITCODE -eq 0) { $script:installed_scoop_apps += $entry.id }
     }
     'winget' {
       if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {

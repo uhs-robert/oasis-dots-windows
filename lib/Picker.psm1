@@ -37,7 +37,8 @@ function Select-OptionalPackages($entries, [string[]] $previous = @()) {
   }
   $load_bind = (@($preselect_actions) + 'first') -join '+'
 
-  $picked = $lines | fzf --multi --layout=reverse --height=90% --cycle `
+  # Full screen on purpose: fzf's --height mode redraws over itself in the legacy Windows console.
+  $picked = $lines | fzf --multi --layout=reverse --cycle `
     --prompt 'optional> ' `
     --header 'TAB toggles, ENTER confirms. A [group] line takes the whole group.' `
     --bind "load:$load_bind"
@@ -55,7 +56,7 @@ function Select-InstallMode {
   )
 
   if (Get-Command fzf -ErrorAction SilentlyContinue) {
-    $picked = $mode_lines | fzf --layout=reverse --height=20% --prompt 'mode> ' --header 'ENTER picks the install mode'
+    $picked = $mode_lines | fzf --layout=reverse --prompt 'mode> ' --header 'ENTER picks the install mode'
     if ($LASTEXITCODE -ne 0 -or -not $picked) { return $null }
     return ($picked -split '\s+')[0]
   }
