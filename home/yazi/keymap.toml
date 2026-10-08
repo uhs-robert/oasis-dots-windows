@@ -1,0 +1,56 @@
+# Windows counterpart of oasis-dots' yazi keymap: no sudo/mount/steam binds, no bash in `shell`.
+# Paths with "~" go through yazi's own expansion; anything env- or git-derived goes through the
+# local jump-to plugin so no shell quoting is involved.
+[mgr]
+prepend_keymap = [
+  # Utils
+  { on = "?", run = "help", desc = "Open help" },
+  { on = "!", run = "shell 'pwsh' --block", desc = "Open shell here" },
+  { on = "+", run = "plugin zoom 1", desc = "Zoom in hovered file" },
+  { on = "-", run = "plugin zoom -1", desc = "Zoom out hovered file" },
+
+  # Toggles
+  { on = ["T", "f"], run = "plugin toggle-pane max-preview", desc = "Maximize or restore the preview pane" },
+  { on = ["T", "p"], run = "plugin toggle-pane min-preview", desc = "Toggle the preview pane" },
+
+  # Relative motions
+  { on = "1", run = "plugin relative-motions 1", desc = "Move in relative steps" },
+  { on = "2", run = "plugin relative-motions 2", desc = "Move in relative steps" },
+  { on = "3", run = "plugin relative-motions 3", desc = "Move in relative steps" },
+  { on = "4", run = "plugin relative-motions 4", desc = "Move in relative steps" },
+  { on = "5", run = "plugin relative-motions 5", desc = "Move in relative steps" },
+  { on = "6", run = "plugin relative-motions 6", desc = "Move in relative steps" },
+  { on = "7", run = "plugin relative-motions 7", desc = "Move in relative steps" },
+  { on = "8", run = "plugin relative-motions 8", desc = "Move in relative steps" },
+  { on = "9", run = "plugin relative-motions 9", desc = "Move in relative steps" },
+
+  # Go to...
+  { on = ["g", "/"], run = 'cd "C:\\"', desc = "Go to C:\\" },
+  { on = ["g", "C"], run = "cd ~/Documents/Clients", desc = "Go to Clients" },
+  { on = ["g", "D"], run = "cd ~/Documents", desc = "Go to Documents" },
+  { on = ["g", "T"], run = "plugin jump-to temp", desc = "Go to %TEMP%" },
+  { on = ["g", "c"], run = "plugin jump-to appdata", desc = "Go to %APPDATA%" },
+  { on = ["g", "d"], run = "cd ~/Downloads", desc = "Go to Downloads" },
+  { on = ["g", "l"], run = "plugin lazygit", desc = "Lazygit" },
+  { on = ["g", "L"], run = "plugin jump-to local_appdata", desc = "Go to %LOCALAPPDATA%" },
+  { on = ["g", "n"], run = "cd ~/Documents/Notes", desc = "Go to Notes" },
+  { on = ["g", "p"], run = "cd ~/Pictures", desc = "Go to Pictures" },
+  { on = ["g", "r"], run = "plugin jump-to git_root", desc = "Go to git root" },
+  { on = ["g", "u"], run = "plugin jump-to development", desc = "Go to Development" },
+  { on = ["g", "v"], run = "cd ~/Videos", desc = "Go to Videos" },
+  { on = ["g", "w"], run = "plugin vcs-files", desc = "Show Git file changes" },
+  { on = ["g", "x"], run = "plugin jump-to dotfiles", desc = "Go to dotfiles-windows" },
+  { on = ["g", "y"], run = "plugin jump-to yazi_config", desc = "Go to yazi config" },
+
+  # In...
+  { on = ["i", "d"], run = "shell --block -- gdu .", desc = "Disk usage" },
+  { on = ["i", "e"], run = "shell -- explorer .", desc = "Open in Explorer" },
+  { on = ["i", "r"], run = "shell --block -- %h", desc = "Run executable" },
+  { on = ["i", "R"], run = "shell --orphan -- %h", desc = "Run executable detached" },
+
+  # Restore
+  { on = ["u"], run = "plugin restore", desc = "Restore last deleted files/folders" },
+
+  # Zip Archive...
+  { on = ["z", "u"], run = "shell --block -- 7z x %h", desc = "Unzip archive" },
+]

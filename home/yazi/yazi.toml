@@ -1,0 +1,53 @@
+# Windows openers. `open` lists the shell default first so a missing optional app never becomes the default.
+[opener]
+open = [
+  { run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+]
+edit = [
+  { run = 'nvim %s', block = true, desc = "NeoVim", for = "windows" },
+]
+json = [
+  { run = 'nvim %s', block = true, desc = "NeoVim", for = "windows" },
+]
+csv = [
+  { run = 'nvim %s', block = true, desc = "NeoVim", for = "windows" },
+  { run = 'start "" %s1', orphan = true, desc = "Default app", for = "windows" },
+]
+image = [
+  { run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+  { run = 'gimp %s', orphan = true, desc = "Gimp", for = "windows" },
+  { run = 'inkscape %s', orphan = true, desc = "Inkscape", for = "windows" },
+]
+video = [
+  { run = 'mpv %s', orphan = true, desc = "mpv", for = "windows" },
+  { run = 'vlc %s', orphan = true, desc = "VLC", for = "windows" },
+  { run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+]
+pdf = [
+  { run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+  { run = 'SumatraPDF %s', orphan = true, desc = "SumatraPDF", for = "windows" },
+]
+
+[open]
+prepend_rules = [
+  { url = "*.json", use = "json" },
+  { url = "*.csv", use = "csv" },
+  { mime = "text/csv", use = "csv" },
+  { mime = "image/*", use = "image" },
+  { mime = "video/*", use = "video" },
+  { mime = "application/pdf", use = "pdf" },
+]
+
+[plugin]
+prepend_previewers = [
+  # Allow to preview folder.
+  { url = "*/", run = "folder", sync = true },
+]
+prepend_fetchers = [
+  { group = "git", url = "*", run = "git" },
+  { group = "git", url = "*/", run = "git" },
+]
+
+[preview]
+max_width = 1200
+max_height = 1200
