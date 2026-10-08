@@ -61,9 +61,12 @@ function Get-InstalledScoopApps {
   $script:installed_scoop_apps
 }
 
+function Get-ScoopRootDir {
+  if ($env:SCOOP) { $env:SCOOP } else { Join-Path $HOME 'scoop' }
+}
+
 function Get-ScoopBucketDir([string] $bucket) {
-  $scoop_root = if ($env:SCOOP) { $env:SCOOP } else { Join-Path $HOME 'scoop' }
-  Join-Path $scoop_root "buckets/$bucket"
+  Join-Path (Get-ScoopRootDir) "buckets/$bucket"
 }
 
 # Scoop installed before git existed downloads buckets as plain folders, and `scoop update`
@@ -98,44 +101,66 @@ function Test-PackageInstalled($entry) {
   }
 }
 
-function Install-Package($entry) {
-  if (Test-PackageInstalled $entry) {
-    Write-Skip "$($entry.key) already installed"
-    return
-  }
+# Client networks have dropped large downloads mid-transfer (Firefox, zig), so a
+# failed install is retried a few times before it is reported.
+$max_install_attempts = 3
+$retry_delay_seconds = 5
 
+# Returns $null on success, otherwise why the attempt failed. Installer output
+# goes to the host so it is shown, not mistaken for the return value.
+function Invoke-PackageInstall($entry) {
   # Native installers report failure only through the exit code, and a stale
   # code from an earlier command would otherwise read as this one failing.
   $global:LASTEXITCODE = 0
 
   switch ($entry.source) {
-    'scoop' {
-      Add-ScoopBucket $entry.bucket
-      scoop install "$($entry.bucket)/$($entry.id)"
-      if ($global:LASTEXITCODE -eq 0) { $script:installed_scoop_apps += $entry.id }
-    }
-    'winget' {
-      if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Warn "$($entry.key) skipped: winget is not available on this machine"
-        return
-      }
-      winget install --exact --id $entry.id --silent --accept-package-agreements --accept-source-agreements
-    }
+    'scoop' { scoop install "$($entry.bucket)/$($entry.id)" | Out-Host }
+    'winget' { winget install --exact --id $entry.id --silent --accept-package-agreements --accept-source-agreements | Out-Host }
     'psgallery' {
       try {
         Install-Module -Name $entry.id -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
       } catch {
-        Write-Fail "$($entry.key) failed to install: $_"
-        return
+        return "$_"
       }
     }
   }
+  if ($global:LASTEXITCODE -ne 0) { "exit $global:LASTEXITCODE" }
+}
 
-  if ($global:LASTEXITCODE -ne 0) {
-    Write-Fail "$($entry.key) failed to install (exit $global:LASTEXITCODE)"
-  } else {
-    Write-Ok $entry.key
+# A failed download can leave a partial file in Scoop's cache, or a half-installed
+# app folder that makes the next `scoop install` refuse to run.
+function Reset-FailedScoopInstall($entry) {
+  scoop cache rm $entry.id 6>$null | Out-Null
+  if (Test-Path -LiteralPath (Join-Path (Get-ScoopRootDir) "apps/$($entry.id)")) {
+    scoop uninstall $entry.id 6>$null | Out-Null
   }
+}
+
+function Install-Package($entry) {
+  if (Test-PackageInstalled $entry) {
+    Write-Skip "$($entry.key) already installed"
+    return
+  }
+  if ($entry.source -eq 'winget' -and -not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    Write-Warn "$($entry.key) skipped: winget is not available on this machine"
+    return
+  }
+  if ($entry.source -eq 'scoop') { Add-ScoopBucket $entry.bucket }
+
+  for ($attempt = 1; $attempt -le $max_install_attempts; $attempt++) {
+    $failure = Invoke-PackageInstall $entry
+    if (-not $failure) {
+      if ($entry.source -eq 'scoop') { $script:installed_scoop_apps += $entry.id }
+      Write-Ok $entry.key
+      return
+    }
+    if ($attempt -lt $max_install_attempts) {
+      Write-Warn "$($entry.key) failed ($failure), retrying in ${retry_delay_seconds}s (attempt $($attempt + 1) of $max_install_attempts)"
+      if ($entry.source -eq 'scoop') { Reset-FailedScoopInstall $entry }
+      Start-Sleep -Seconds $retry_delay_seconds
+    }
+  }
+  Write-Fail "$($entry.key) failed to install after $max_install_attempts attempts ($failure)"
 }
 
 Export-ModuleMember -Function Read-PackageIni, Read-LocalPackageIni, Install-Package, Test-PackageInstalled
