@@ -166,8 +166,9 @@ to `$HOME\.local\state\oasis-dots-windows\backups\<timestamp>\`.
   - Explorer (both modes): show file extensions and hidden files, keep web results out of Start search.
   - Taskbar (desktop): auto-hide, so Zebar owns the top edge.
   - Keyboard (desktop): shortest repeat delay and fastest repeat rate (takes effect at next sign-in).
-  - Wireless LAN Service (desktop, Windows Server only): installs the `Wireless-Networking` feature when
-    `wlanapi.dll` is missing, because Zebar cannot start without it. It does not enable Wi-Fi.
+  - Windows Server (desktop, Server only): installs the `Wireless-Networking` feature when `wlanapi.dll`
+    is missing and the Evergreen WebView2 runtime when it is missing, both of which Zebar needs to start,
+    and stops Server Manager opening at sign-in for your user.
   - SSH default shell (headless): if OpenSSH Server is installed, make pwsh 7 the login shell. It does
     not install or enable sshd.
 - Scoop and PowerShell Gallery packages, repo sync, the links and the user environment variables do not
@@ -216,7 +217,7 @@ manifest.psd1          repos, links, environment variables, theme
 justfile               update, pick, link, lint and friends
 packages/              required.ini, optional.ini, gui-required.ini, gui-optional.ini
 lib/                   PowerShell modules: Log, Manifest, Packages, Picker
-system/                Windows tweaks: developer-mode, explorer, taskbar, keyboard, wlan-service, ssh-default-shell
+system/                Windows tweaks: developer-mode, explorer, taskbar, keyboard, windows-server, ssh-default-shell
 home/
   glazewm/             config.yaml, scripts/ (focus-or-launch, launch)
   zebar/               settings.json, oasis/ (bar, styles, zpack)

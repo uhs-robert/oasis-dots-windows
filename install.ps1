@@ -184,7 +184,7 @@ if (Test-StepEnabled 'environment') {
 
 if (Test-StepEnabled 'system') {
   Write-Step 'Applying system tweaks'
-  $system_scripts = if ($is_desktop) { @('developer-mode', 'explorer', 'taskbar', 'keyboard', 'wlan-service') } else { @('developer-mode', 'explorer', 'ssh-default-shell') }
+  $system_scripts = if ($is_desktop) { @('developer-mode', 'explorer', 'taskbar', 'keyboard', 'windows-server') } else { @('developer-mode', 'explorer', 'ssh-default-shell') }
   if ($is_elevated) {
     foreach ($name in $system_scripts | Where-Object { -not ($developer_mode_done -and $_ -eq 'developer-mode') }) {
       Invoke-SystemScript $name
