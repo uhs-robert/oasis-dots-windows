@@ -187,7 +187,7 @@ Explorer, run executable), `z u` (unzip), `T` (pane toggles), `u` (restore delet
 | `g c` | `%APPDATA%` |
 | `g L` | `%LOCALAPPDATA%` |
 | `g u` | Development folder (`GITHUB_DIR`, or `~\Development`) |
-| `g x` | The dotfiles-windows repo (`DOTFILES_WINDOWS`) |
+| `g x` | The oasis-dots-windows repo (`OASIS_DOTS_WINDOWS`) |
 | `g y` | Yazi config folder |
 | `g r` | Git root of the current folder |
 | `g w` | Git file changes |

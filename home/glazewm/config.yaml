@@ -1,9 +1,9 @@
 general:
   startup_commands:
     - 'shell-exec zebar'
-    - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Flow*Launcher'
+    - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Flow*Launcher'
     # Optional; launch.ps1 is a no-op when the shortcut does not exist.
-    - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut HuntAndPeck'
+    - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut HuntAndPeck'
   shutdown_commands: ['shell-exec taskkill /IM zebar.exe /F']
   config_reload_commands: []
   focus_follows_cursor: false
@@ -137,18 +137,18 @@ binding_modes:
       - commands: ['shell-exec slack', 'wm-disable-binding-mode --name apps']
         bindings: ['s']
       # Apps without a GUI Scoop shim start from their Start Menu shortcut
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Discord', 'wm-disable-binding-mode --name apps']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Discord', 'wm-disable-binding-mode --name apps']
         bindings: ['d']
       # floated by the window rule on its title
       - commands: ['shell-exec wezterm-gui start qalc', 'wm-disable-binding-mode --name apps']
         bindings: ['c']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut GIMP', 'wm-disable-binding-mode --name apps']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut GIMP', 'wm-disable-binding-mode --name apps']
         bindings: ['g']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Inkscape', 'wm-disable-binding-mode --name apps']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Inkscape', 'wm-disable-binding-mode --name apps']
         bindings: ['i']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut LibreOffice*Writer', 'wm-disable-binding-mode --name apps']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut LibreOffice*Writer', 'wm-disable-binding-mode --name apps']
         bindings: ['w']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut LibreOffice*Calc', 'wm-disable-binding-mode --name apps']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut LibreOffice*Calc', 'wm-disable-binding-mode --name apps']
         bindings: ['x']
       - commands: ['shell-exec wezterm-gui start', 'wm-disable-binding-mode --name apps']
         bindings: ['t']
@@ -160,22 +160,22 @@ binding_modes:
   # Each key focuses the app's window, launching it when none is open.
   - name: 'go'
     keybindings:
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui wezterm-gui start', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui wezterm-gui start', 'wm-disable-binding-mode --name go']
         bindings: ['t']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name firefox firefox', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name firefox firefox', 'wm-disable-binding-mode --name go']
         bindings: ['b']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name qutebrowser qutebrowser', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name qutebrowser qutebrowser', 'wm-disable-binding-mode --name go']
         bindings: ['q']
       # files and config are told apart by WezTerm window title
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui -title_pattern (?i)yazi wezterm-gui start yazi', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui -title_pattern (?i)yazi wezterm-gui start yazi', 'wm-disable-binding-mode --name go']
         bindings: ['f']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name betterbird Betterbird', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name betterbird Betterbird', 'wm-disable-binding-mode --name go']
         bindings: ['m']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name slack slack', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name slack slack', 'wm-disable-binding-mode --name go']
         bindings: ['s']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name discord -shortcut Discord', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name discord -shortcut Discord', 'wm-disable-binding-mode --name go']
         bindings: ['d']
-      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %DOTFILES_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui -title_pattern (?i)nvim wezterm-gui start --cwd %DOTFILES_WINDOWS% nvim .', 'wm-disable-binding-mode --name go']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\focus-or-launch.ps1 -process_name wezterm-gui -title_pattern (?i)nvim wezterm-gui start --cwd %OASIS_DOTS_WINDOWS% nvim .', 'wm-disable-binding-mode --name go']
         bindings: ['c']
       - commands: ['focus --recent-workspace', 'wm-disable-binding-mode --name go']
         bindings: ['tab']

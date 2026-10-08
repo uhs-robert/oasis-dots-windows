@@ -7,7 +7,7 @@ local function capitalized(word)
 end
 
 local function oasis_scheme_dir()
-  local root = os.getenv("DOTFILES_WINDOWS")
+  local root = os.getenv("OASIS_DOTS_WINDOWS")
   if not root then
     return nil
   end

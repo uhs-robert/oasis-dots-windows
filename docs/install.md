@@ -4,19 +4,19 @@ Everything the installer does, for when the [README](../README.md) is not enough
 
 ## Bootstrap
 
-`bootstrap.ps1` runs on the stock Windows PowerShell 5.1. It installs Scoop, git and pwsh if they are missing, clones this repo to `$HOME\dotfiles-windows` (or to `$DOTFILES_WINDOWS` if set), and runs `install.ps1`.
+`bootstrap.ps1` runs on the stock Windows PowerShell 5.1. It installs Scoop, git and pwsh if they are missing, clones this repo to `$HOME\oasis-dots-windows` (or to `$OASIS_DOTS_WINDOWS` if set), and runs `install.ps1`.
 
-`irm | iex` cannot take parameters. To pass `install.ps1` flags, set `DOTFILES_WINDOWS_ARGS` first:
+`irm | iex` cannot take parameters. To pass `install.ps1` flags, set `OASIS_DOTS_WINDOWS_ARGS` first:
 
 ```powershell
-$env:DOTFILES_WINDOWS_ARGS = '-mode headless -unattended'
-irm https://raw.githubusercontent.com/uhs-robert/dotfiles-windows/main/bootstrap.ps1 | iex
+$env:OASIS_DOTS_WINDOWS_ARGS = '-mode headless -unattended'
+irm https://raw.githubusercontent.com/uhs-robert/oasis-dots-windows/main/bootstrap.ps1 | iex
 ```
 
 Or run the installer directly from a clone:
 
 ```powershell
-cd $HOME\dotfiles-windows
+cd $HOME\oasis-dots-windows
 ./install.ps1                       # full install, picker included
 ./install.ps1 -select media,dev-js  # skip the picker, use these groups
 ```
@@ -33,7 +33,7 @@ cd $HOME\dotfiles-windows
 
 ## Modes
 
-The mode is chosen on the first run and saved to `$HOME\.local\state\dotfiles-windows\mode.txt`. `./install.ps1 -mode desktop` (or `headless`) overrides and saves it, and re-runs reuse it. With `-unattended` and no saved mode the installer stops and asks for `-mode`. Switching a machine from desktop to headless removes the desktop-only links, variables and the GlazeWM Startup shortcut on the next run.
+The mode is chosen on the first run and saved to `$HOME\.local\state\oasis-dots-windows\mode.txt`. `./install.ps1 -mode desktop` (or `headless`) overrides and saves it, and re-runs reuse it. With `-unattended` and no saved mode the installer stops and asks for `-mode`. Switching a machine from desktop to headless removes the desktop-only links, variables and the GlazeWM Startup shortcut on the next run.
 
 Configs that port unchanged are not copied. They are read from the upstream repos, which are cloned into `repos/`:
 
@@ -85,7 +85,7 @@ Group names are unique across all package files, because `when` and the saved se
 
 ### Per-machine packages
 
-Entries in `$HOME\.config\dotfiles-windows\packages.ini` are added to the optional picker in both
+Entries in `$HOME\.config\oasis-dots-windows\packages.ini` are added to the optional picker in both
 modes. The format is the same as `packages/optional.ini`. Each `[section]` becomes a group named
 `local-<section>`; entries before any section go in the group `local`. The file is not part of this
 repo, and the installer does not check whether its packages suit the mode.
@@ -105,7 +105,7 @@ The picker is one fzf tree of groups and packages:
 - The `(none)` line confirms with nothing selected.
 - TAB toggles a line, ENTER confirms, Esc cancels.
 
-Selected tokens are saved to `$HOME\.local\state\dotfiles-windows\selection.txt`. Re-running the
+Selected tokens are saved to `$HOME\.local\state\oasis-dots-windows\selection.txt`. Re-running the
 installer starts with that selection already marked. Saved tokens are group names or `group/app`
 keys, so a group picked once also picks up packages added to it later.
 
@@ -138,7 +138,7 @@ Environment variables are set at user scope:
 
 | Name                  | Value                                                      |
 | --------------------- | ---------------------------------------------------------- |
-| `DOTFILES_WINDOWS`    | this repo's path                                           |
+| `OASIS_DOTS_WINDOWS`    | this repo's path                                           |
 | `OASIS_THEME`         | `moonlight`                                                |
 | `GLAZEWM_CONFIG_PATH` | `home\glazewm\config.yaml` (no link needed)                |
 | `LG_CONFIG_FILE`      | oasis-dots lazygit config, then `home\lazygit\windows.yml` |
@@ -147,7 +147,7 @@ Environment variables are set at user scope:
 `EDITOR` and `VISUAL` are set in the shell profiles, not as user variables.
 
 Before a link replaces an existing file or folder that this repo did not create, the original is moved
-to `$HOME\.local\state\dotfiles-windows\backups\<timestamp>\`.
+to `$HOME\.local\state\oasis-dots-windows\backups\<timestamp>\`.
 
 ## Admin and non-admin
 

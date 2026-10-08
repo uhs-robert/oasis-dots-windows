@@ -39,7 +39,7 @@ prepend_keymap = [
   { on = ["g", "u"], run = "plugin jump-to development", desc = "Go to Development" },
   { on = ["g", "v"], run = "cd ~/Videos", desc = "Go to Videos" },
   { on = ["g", "w"], run = "plugin vcs-files", desc = "Show Git file changes" },
-  { on = ["g", "x"], run = "plugin jump-to dotfiles", desc = "Go to dotfiles-windows" },
+  { on = ["g", "x"], run = "plugin jump-to dotfiles", desc = "Go to oasis-dots-windows" },
   { on = ["g", "y"], run = "plugin jump-to yazi_config", desc = "Go to yazi config" },
 
   # In...

@@ -20,7 +20,7 @@ $env:FZF_DEFAULT_OPTS = "--height=80% --layout=reverse --border --preview 'bat -
 # Functions
 
 # The profile is a symlink, so $PSScriptRoot points into Documents, not the repo.
-$repo_root = $env:DOTFILES_WINDOWS
+$repo_root = $env:OASIS_DOTS_WINDOWS
 if (-not $repo_root) {
   $profile_target = (Get-Item $PSCommandPath -ErrorAction SilentlyContinue).Target
   if ($profile_target) { $repo_root = Split-Path (Split-Path (Split-Path ([string]$profile_target))) }
@@ -88,8 +88,8 @@ if ($is_interactive) {
   }
 
   $oasis_theme = $env:OASIS_THEME ?? 'moonlight'
-  if ($env:DOTFILES_WINDOWS) {
-    $psreadline_theme = Join-Path $env:DOTFILES_WINDOWS "repos\oasis.nvim\extras\psreadline\themes\dark\oasis_${oasis_theme}_dark.ps1"
+  if ($env:OASIS_DOTS_WINDOWS) {
+    $psreadline_theme = Join-Path $env:OASIS_DOTS_WINDOWS "repos\oasis.nvim\extras\psreadline\themes\dark\oasis_${oasis_theme}_dark.ps1"
     if (Test-Path $psreadline_theme) { . $psreadline_theme }
   }
 }

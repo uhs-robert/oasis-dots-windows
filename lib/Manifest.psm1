@@ -9,11 +9,11 @@ function Test-Elevated {
 }
 
 function Get-StateDir {
-  Join-Path $HOME '.local/state/dotfiles-windows'
+  Join-Path $HOME '.local/state/oasis-dots-windows'
 }
 
 function Get-LocalPackageFile {
-  Join-Path $HOME '.config/dotfiles-windows/packages.ini'
+  Join-Path $HOME '.config/oasis-dots-windows/packages.ini'
 }
 
 function Get-ScoopRoot {

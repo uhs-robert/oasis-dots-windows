@@ -40,7 +40,7 @@
   )
 
   environment = @(
-    @{ name = 'DOTFILES_WINDOWS'; value = '{repo}' }
+    @{ name = 'OASIS_DOTS_WINDOWS'; value = '{repo}' }
     @{ name = 'OASIS_THEME'; value = '{theme}' }
     @{ name = 'GLAZEWM_CONFIG_PATH'; value = '{repo}\home\glazewm\config.yaml'; mode = 'desktop' }
     # lazygit merges comma-separated files, later wins.
