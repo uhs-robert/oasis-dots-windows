@@ -24,6 +24,7 @@ GlazeWM with `Alt+Shift+p`.
 | `Alt+.` / `Alt+,` | Next / previous active workspace |
 | `Alt+d` | Recent workspace |
 | `Alt+Enter` | New WezTerm window |
+| `Alt+y` | Yazi in a new WezTerm window |
 | `Alt+v` | Toggle tiling direction |
 | `Alt+t` | Toggle tiling |
 | `Alt+Shift+Space` | Toggle floating (centered) |
@@ -69,10 +70,14 @@ Each key starts an app and leaves the mode.
 | `i` | Inkscape |
 | `w` | LibreOffice Writer |
 | `x` | LibreOffice Calc |
-| `t` | WezTerm |
 | `u` | gdu (disk usage, in WezTerm) |
-| `p` | PowerShell in its own console window |
-| `P` | WezTerm as Administrator, so its pwsh is elevated (asks UAC) |
+| `t` | btop (task manager, in WezTerm) |
+| `a` | WezTerm as Administrator, so its pwsh is elevated (asks UAC) |
+| `p` | PowerShell in its own console window, a fallback for when WezTerm misbehaves |
+| `h` | xh (HTTP client), typed at a floating WezTerm prompt for its arguments |
+| `D` | doggo (DNS), same |
+| `G` | gping, same |
+| `S` | Steam |
 | `Esc` / `Alt+a` | Leave apps mode |
 
 ### Go mode (`Alt+g`)

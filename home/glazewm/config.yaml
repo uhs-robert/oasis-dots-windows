@@ -101,7 +101,7 @@ window_rules:
       - window_class: { equals: '#32770' }
       - window_process: { equals: 'Taskmgr' }
       - window_process: { equals: 'wezterm-gui' }
-        window_title: { regex: '(?i)qalc' }
+        window_title: { regex: '(?i)qalc|^(xh|doggo|gping)$' }
 
 binding_modes:
   - name: 'resize'
@@ -156,17 +156,27 @@ binding_modes:
         bindings: ['w']
       - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut LibreOffice*Calc', 'wm-disable-binding-mode --name apps']
         bindings: ['x']
-      - commands: ['shell-exec wezterm-gui start', 'wm-disable-binding-mode --name apps']
-        bindings: ['t']
       - commands: ['shell-exec wezterm-gui start gdu', 'wm-disable-binding-mode --name apps']
         bindings: ['u']
-      # A standalone console rather than WezTerm (`t` already covers that).
+      - commands: ['shell-exec wezterm-gui start btop', 'wm-disable-binding-mode --name apps']
+        bindings: ['t']
+      # Typed at the prompt but not run, since these need arguments; floated by the window rule.
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\prefill.ps1 -command xh', 'wm-disable-binding-mode --name apps']
+        bindings: ['h']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\prefill.ps1 -command doggo', 'wm-disable-binding-mode --name apps']
+        bindings: ['shift+d']
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\prefill.ps1 -command gping', 'wm-disable-binding-mode --name apps']
+        bindings: ['shift+g']
+      # Steam comes from winget, so it has no Scoop shim or shortcut; its URL handler launches it.
+      - commands: ['shell-exec steam://open/main', 'wm-disable-binding-mode --name apps']
+        bindings: ['shift+s']
+      # A standalone console, as a fallback for when WezTerm itself misbehaves.
       - commands: ['shell-exec pwsh', 'wm-disable-binding-mode --name apps']
         bindings: ['p']
       # shell-exec cannot elevate, so this goes through Start-Process -Verb RunAs and its UAC
       # prompt. --always-new-process keeps a running unelevated WezTerm from adopting the window.
       - commands: ['shell-exec --hide-window pwsh -NoProfile -Command Start-Process wezterm-gui -ArgumentList ''start'',''--always-new-process'' -Verb RunAs', 'wm-disable-binding-mode --name apps']
-        bindings: ['shift+p']
+        bindings: ['a']
       - commands: ['wm-disable-binding-mode --name apps']
         bindings: ['escape', 'alt+a']
 
@@ -258,6 +268,8 @@ keybindings:
 
   - commands: ['shell-exec wezterm-gui start']
     bindings: ['alt+enter']
+  - commands: ['shell-exec wezterm-gui start yazi']
+    bindings: ['alt+y']
 
   - commands: ['focus --next-active-workspace']
     bindings: ['alt+oem_period']
