@@ -46,15 +46,15 @@ Run it from an elevated PowerShell if you can. Admin turns on Developer Mode, so
 
 GlazeWM tiles every window, driven by Alt:
 
-| Keys                | Does                                                       |
-| ------------------- | ---------------------------------------------------------- |
-| `Alt+Enter`         | Open WezTerm                                               |
-| `Alt+Space`         | Flow Launcher: apps, files, calculator                     |
-| `Alt+h/j/k/l`       | Focus left, down, up, right (`Alt+Shift+h/j/k/l` moves)    |
-| `Alt+1..9`          | Switch workspace (`Alt+Shift+1..9` sends the window there) |
-| `Alt+a`, then a key | Launch an app: `b` browser, `e` nvim, `f` yazi, `s` Slack  |
-| `Alt+g`, then a key | Jump to an app's window, launching it if it isn't open     |
-| `Alt+Shift+/`       | Show every global bind in a popup (`Esc` closes it)        |
+| Keys                | Does                                                            |
+| ------------------- | --------------------------------------------------------------- |
+| `Alt+Enter`         | Open WezTerm                                                    |
+| `Alt+Space`         | Flow Launcher: apps, files, calculator                          |
+| `Alt+h/j/k/l`       | Focus left, down, up, right (`Alt+Shift+h/j/k/l` moves)         |
+| `Alt+1..9`, `Alt+0` | Switch workspace (`Alt+Shift+` the same sends the window there) |
+| `Alt+a`, then a key | Launch an app: `b` browser, `e` nvim, `f` yazi, `s` Slack       |
+| `Alt+g`, then a key | Jump to an app's window, launching it if it isn't open          |
+| `Alt+Shift+/`       | Show every global bind in a popup (`Esc` closes it)             |
 
 While a mode like `Alt+a` is active, a Zebar popup lists its keys (only for installed apps). In WezTerm, `Ctrl+a` is a tmux-style leader for tabs, splits and workspaces. Every bind is in [docs/keybinds.md](docs/keybinds.md).
 
