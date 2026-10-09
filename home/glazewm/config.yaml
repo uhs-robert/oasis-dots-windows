@@ -1,7 +1,7 @@
 general:
   startup_commands:
     - 'shell-exec zebar'
-    - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut Flow*Launcher'
+    - 'shell-exec %SCOOP%\apps\flow-launcher\current\Flow.Launcher.exe'
     # Optional; launch.ps1 is a no-op when the shortcut does not exist.
     - 'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\home\glazewm\scripts\launch.ps1 -shortcut HuntAndPeck'
   shutdown_commands: ['shell-exec taskkill /IM zebar.exe /F']
@@ -61,12 +61,18 @@ window_behavior:
       maximized: false
       shown_on_top: false
 
+# Workspaces 1-5 stay in the bar when empty; 6-9 appear on demand.
 workspaces:
   - name: '1'
+    keep_alive: true
   - name: '2'
+    keep_alive: true
   - name: '3'
+    keep_alive: true
   - name: '4'
+    keep_alive: true
   - name: '5'
+    keep_alive: true
   - name: '6'
   - name: '7'
   - name: '8'

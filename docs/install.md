@@ -149,6 +149,7 @@ Environment variables are set at user scope:
 | `OASIS_THEME`         | `moonlight`                                                |
 | `GLAZEWM_CONFIG_PATH` | `home\glazewm\config.yaml` (no link needed)                |
 | `LG_CONFIG_FILE`      | oasis-dots lazygit config, then `home\lazygit\windows.yml` |
+| `SCOOP`               | the Scoop root (GlazeWM and the bar launch Flow Launcher from it) |
 | `YAZI_FILE_ONE`       | Git's `file.exe` (Yazi's preview helper)                   |
 
 `EDITOR` and `VISUAL` are set in the shell profiles, not as user variables.
