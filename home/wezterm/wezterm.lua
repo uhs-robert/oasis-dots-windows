@@ -31,6 +31,10 @@ config.default_prog = { "pwsh", "-NoLogo" }
 config.launch_menu = launch_menu
 config.font = wezterm.font_with_fallback({ "JetBrainsMono Nerd Font", "JetBrains Mono" })
 config.font_size = 12.0
+-- WebGpu renders through Direct3D 12, which falls back to Windows' software adapter (WARP)
+-- when there is no GPU driver, as on a Windows Server reached over RDP. The OpenGL default
+-- fails there ("OpenGL implementation is too old"), and on real GPUs WebGpu works too.
+config.front_end = "WebGpu"
 config.scrollback_lines = 5000
 config.audible_bell = "Disabled"
 -- GlazeWM owns window placement; keep only the resize border.
