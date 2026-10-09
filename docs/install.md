@@ -103,6 +103,17 @@ main/slack-cli
 extras/zoom
 ```
 
+Neovim's language support follows what is installed: a language whose Mason tools need Node,
+Python, Go, Ruby or Rust only loads when that toolchain is on PATH, so picking `dev-js` is what
+brings in TypeScript, Astro and the other Node-based languages. To turn one off on this machine
+anyway, create `%LOCALAPPDATA%\nvim\lua\config\machine.lua`:
+
+```lua
+return { disabled_extras = { "lang.astro" } }
+```
+
+The neovim repo's README lists the extras and what each one needs.
+
 ### The picker
 
 The picker is one fzf tree of groups and packages:
