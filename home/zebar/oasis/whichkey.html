@@ -67,7 +67,9 @@
         ],
       };
 
-      const column_count = 4;
+      const max_column_count = 4;
+      // Kept clear on both sides so the panel never touches the screen edge.
+      const screen_margin_px = 32;
 
       // The installer lists the installed packages in installed.json. Zebar may cache widget files,
       // hence the no-store and the unique query. Any failure shows every hint rather than none.
@@ -110,7 +112,6 @@
 
       function panel(binding_mode, hints) {
         const entries = el('div', 'entries', '');
-        entries.style.gridTemplateRows = `repeat(${Math.ceil(hints.length / column_count)}, auto)`;
         for (const [key, label] of hints) {
           const entry = el('div', 'entry', '');
           entry.append(el('span', 'entry_key', key), el('span', 'entry_label', label));
@@ -122,6 +123,16 @@
           entries,
         );
         return container;
+      }
+
+      // Starts at four columns and drops one at a time until the panel fits the screen, so a
+      // narrow remote screen gets a taller panel instead of one that runs off the edge.
+      function fit_columns(container, entry_count) {
+        const entries = container.querySelector('.entries');
+        for (let columns = max_column_count; columns >= 1; columns--) {
+          entries.style.gridTemplateRows = `repeat(${Math.ceil(entry_count / columns)}, auto)`;
+          if (container.offsetWidth <= window.innerWidth - screen_margin_px) return;
+        }
       }
 
       const glazewm = zebar.createProvider({ type: 'glazewm' });
@@ -138,7 +149,9 @@
         if (mode_key === shown_mode_key) return;
         shown_mode_key = mode_key;
         if (hints) {
-          root.replaceChildren(panel(binding_mode, hints));
+          const container = panel(binding_mode, hints);
+          root.replaceChildren(container);
+          fit_columns(container, hints.length);
         } else {
           root.replaceChildren();
         }
