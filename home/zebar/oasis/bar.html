@@ -18,8 +18,6 @@
       // changes. Zebar's own refresh intervals (cpu, memory, network 5 s; date 1 s) are too chatty
       // there.
       const server_refresh_ms = 10_000;
-      // The clock shows no seconds; this only bounds how stale the minute can get.
-      const server_date_refresh_ms = 15_000;
       const host_timeout_ms = 3_000;
 
       // Resolves to the host output, or null if it does not arrive in time, which keeps Zebar's defaults.
@@ -41,17 +39,17 @@
         return [host?.osName, host?.friendlyOsVersion].some(name => /server/i.test(name ?? ''));
       }
 
-      const refresh_options = is_windows_server(await first_host_output())
-        ? { stat: { refreshInterval: server_refresh_ms }, date: { refreshInterval: server_date_refresh_ms } }
-        : { stat: {}, date: {} };
+      const is_server = is_windows_server(await first_host_output());
+      const stat_options = is_server ? { refreshInterval: server_refresh_ms } : {};
 
       const providers = zebar.createProviderGroup({
         glazewm: { type: 'glazewm' },
-        cpu: { type: 'cpu', ...refresh_options.stat },
-        memory: { type: 'memory', ...refresh_options.stat },
-        network: { type: 'network', ...refresh_options.stat },
+        cpu: { type: 'cpu', ...stat_options },
+        memory: { type: 'memory', ...stat_options },
+        network: { type: 'network', ...stat_options },
         systray: { type: 'systray' },
-        date: { type: 'date', formatting: 'EEE d MMM  HH:mm', ...refresh_options.date },
+        // A server is only reached remotely, and the client's own clock is already on screen.
+        ...(is_server ? {} : { date: { type: 'date', formatting: 'EEE d MMM  HH:mm' } }),
       });
 
       const root = document.getElementById('root');
@@ -64,9 +62,9 @@
         wifi: '\uf1eb',
         ethernet: '\u{f0200}',
         offline: '\u{f05aa}',
-        // The icons open to the chevron's right, so it points that way while collapsed.
-        tray_collapsed: '\uf054',
-        tray_expanded: '\uf053',
+        // The icons open to the chevron's left, so it points that way while collapsed.
+        tray_collapsed: '\uf053',
+        tray_expanded: '\uf054',
       };
 
       // Runs the exe directly: going through launch.ps1 cost a cold pwsh start plus a Start Menu search.
@@ -130,7 +128,7 @@
       let is_tray_expanded = false;
       const tray_toggle = el('button', 'tray_toggle', icons.tray_collapsed, { title: 'Show tray icons' });
       const tray_group = el('div', 'tray_group');
-      tray_group.append(tray_toggle, tray);
+      tray_group.append(tray, tray_toggle);
       tray.hidden = true;
 
       tray_toggle.addEventListener('click', () => {
@@ -152,6 +150,9 @@
       // GlazeWM only reports workspaces that have been opened, and keep_alive only stops them
       // from closing, so 1-5 are drawn even before they exist; focusing one creates it.
       const pinned_workspace_names = ['1', '2', '3', '4', '5'];
+
+      // Workspaces are named 1-9 in the GlazeWM config; any other name (a display_name) is kept.
+      const roman_numerals = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII', 9: 'IX' };
 
       function update_workspaces(current_workspaces) {
         const active_by_name = new Map(current_workspaces.map(w => [w.name, w]));
@@ -175,7 +176,8 @@
             if (!workspace) classes.push('empty');
             if (workspace?.hasFocus) classes.push('focused');
             if (workspace?.isDisplayed) classes.push('displayed');
-            return el('button', classes.join(' '), workspace?.displayName ?? name, {
+            const label = workspace?.displayName ?? name;
+            return el('button', classes.join(' '), roman_numerals[label] ?? label, {
               'data-command': `focus --workspace ${name}`,
             });
           }),
