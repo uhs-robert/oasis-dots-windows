@@ -68,15 +68,26 @@ function Sync-Repo($repo, $context) {
 
   if (Test-Path -LiteralPath (Join-Path $destination '.git')) {
     git -C $destination pull --ff-only --quiet
-    if ($LASTEXITCODE -ne 0) { Write-Warn "$($repo.name): pull failed (local changes?), keeping current checkout"; return }
-    Write-Ok "$($repo.name) up to date"
-    return
+    if ($LASTEXITCODE -ne 0) { Write-Warn "$($repo.name): pull failed (local changes?), keeping current checkout" }
+    else { Write-Ok "$($repo.name) up to date" }
+  } else {
+    New-Item -ItemType Directory -Path $context.repos_dir -Force | Out-Null
+    git clone --quiet $repo.url $destination
+    if ($LASTEXITCODE -ne 0) { Write-Fail "$($repo.name): clone of $($repo.url) failed"; return }
+    Write-Ok "$($repo.name) cloned"
   }
 
-  New-Item -ItemType Directory -Path $context.repos_dir -Force | Out-Null
-  git clone --quiet $repo.url $destination
-  if ($LASTEXITCODE -ne 0) { Write-Fail "$($repo.name): clone of $($repo.url) failed"; return }
-  Write-Ok "$($repo.name) cloned"
+  Enable-RepoHook $repo.name $destination
+}
+
+# A repo's tracked .githooks\ (neovim regenerates its README plugin list there) only runs once that
+# repo's own core.hooksPath points at it. A hooksPath already set by hand is left alone.
+function Enable-RepoHook([string] $name, [string] $checkout) {
+  if (-not (Test-Path -LiteralPath (Join-Path $checkout '.githooks') -PathType Container)) { return }
+  if (git -C $checkout config --local core.hooksPath) { return }
+  git -C $checkout config --local core.hooksPath .githooks
+  if ($LASTEXITCODE -eq 0) { Write-Ok "${name}: git hooks enabled" }
+  else { Write-Warn "${name}: could not enable git hooks" }
 }
 
 # Targets we wrote as plain files (jq output, or the copy fallback) look like

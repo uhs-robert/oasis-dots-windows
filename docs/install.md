@@ -48,6 +48,10 @@ Configs that port unchanged are not copied. They are read from the upstream repo
 - `oasis.nvim`: theme files for WezTerm, PSReadLine and Yazi
 - `neovim`: the Neovim config
 
+A cloned repo that ships a `.githooks\` folder gets its own `core.hooksPath` pointed at it, so its
+hooks run when you commit from that checkout. Today that is neovim, whose hook keeps its README's
+plugin list current. A `core.hooksPath` you set yourself is left alone.
+
 ## Packages
 
 Packages come from Scoop, winget or the PowerShell Gallery. Their definitions are in `packages/`.
