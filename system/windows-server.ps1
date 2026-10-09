@@ -71,6 +71,30 @@ function Disable-ServerManagerAtLogon {
   $true
 }
 
+# A server has no GPU, so Windows draws animations, transparency and shadows in software, and a
+# remote-control session re-sends every frame of them. This is Performance Options' "Adjust for
+# best performance", for the current user; it fully applies at next sign-in.
+function Set-BestPerformanceVisuals {
+  $visual_settings = @(
+    @{ path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects'; name = 'VisualFXSetting'; type = 'DWord'; value = 2 }
+    @{ path = 'HKCU:\Control Panel\Desktop'; name = 'UserPreferencesMask'; type = 'Binary'; value = [byte[]] (0x90, 0x12, 0x03, 0x80, 0x10, 0x00, 0x00, 0x00) }
+    @{ path = 'HKCU:\Control Panel\Desktop\WindowMetrics'; name = 'MinAnimate'; type = 'String'; value = '0' }
+    @{ path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'; name = 'TaskbarAnimations'; type = 'DWord'; value = 0 }
+    @{ path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'; name = 'EnableTransparency'; type = 'DWord'; value = 0 }
+  )
+
+  $changed = $false
+  foreach ($setting in $visual_settings) {
+    $current = (Get-ItemProperty -Path $setting.path -Name $setting.name -ErrorAction SilentlyContinue).($setting.name)
+    if ("$current" -eq "$($setting.value)") { continue }
+
+    if (-not (Test-Path $setting.path)) { New-Item -Path $setting.path -Force | Out-Null }
+    Set-ItemProperty -Path $setting.path -Name $setting.name -Type $setting.type -Value $setting.value
+    $changed = $true
+  }
+  $changed
+}
+
 # Each step runs even when an earlier one changed something.
-$changes = @(Add-WlanApi; Add-WebView2; Disable-ServerManagerAtLogon)
+$changes = @(Add-WlanApi; Add-WebView2; Disable-ServerManagerAtLogon; Set-BestPerformanceVisuals)
 $changes -contains $true

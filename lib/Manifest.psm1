@@ -193,9 +193,10 @@ function Install-ManifestLink($link, $context) {
 
   $existing = Get-LinkItem $target
   $is_filtered = [bool] $link.filter
+  $is_copied = [bool] $link.copy
   $is_owned_file = $existing -and ($target -in (Get-OwnedFiles $context))
 
-  if ($existing -and -not $is_filtered -and (Get-LinkDestination $existing) -eq (Get-NormalizedPath $source)) {
+  if ($existing -and -not ($is_filtered -or $is_copied) -and (Get-LinkDestination $existing) -eq (Get-NormalizedPath $source)) {
     Write-Skip "$target already linked"
     return 'skipped'
   }
@@ -215,6 +216,13 @@ function Install-ManifestLink($link, $context) {
     Add-OwnedFile $target $context
     Write-Ok "$target (filtered copy: $($link.filter))"
     return 'filtered'
+  }
+
+  if ($is_copied) {
+    Copy-Item -LiteralPath $source -Destination $target -Force
+    Add-OwnedFile $target $context
+    Write-Ok "$target (copy of $source)"
+    return 'copied'
   }
 
   $result = New-LinkOrFallback $source $target $context

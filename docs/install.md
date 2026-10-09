@@ -168,7 +168,8 @@ to `$HOME\.local\state\oasis-dots-windows\backups\<timestamp>\`.
   - Keyboard (desktop): shortest repeat delay and fastest repeat rate (takes effect at next sign-in).
   - Windows Server (desktop, Server only): installs the `Wireless-Networking` feature when `wlanapi.dll`
     is missing and the Evergreen WebView2 runtime when it is missing, both of which Zebar needs to start,
-    and stops Server Manager opening at sign-in for your user.
+    stops Server Manager opening at sign-in, and switches your user to "Adjust for best performance"
+    (no animations, transparency or shadows; there is no GPU, and a remote session re-sends every frame).
   - SSH default shell (headless): if OpenSSH Server is installed, make pwsh 7 the login shell. It does
     not install or enable sshd.
 - Scoop and PowerShell Gallery packages, repo sync, the links and the user environment variables do not
