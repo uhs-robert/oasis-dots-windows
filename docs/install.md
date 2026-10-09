@@ -109,14 +109,19 @@ extras/zoom
 
 Neovim's language support follows what is installed: a language whose Mason tools need Node,
 Python, Go, Ruby or Rust only loads when that toolchain is on PATH, so picking `dev-js` is what
-brings in TypeScript, Astro and the other Node-based languages. To turn one off on this machine
-anyway, create `%LOCALAPPDATA%\nvim\lua\config\machine.lua`:
+brings in TypeScript, Astro and the other Node-based languages. To trim Neovim on this machine
+further, create `%LOCALAPPDATA%\nvim\lua\config\machine.lua`. A server or remote desktop usually
+only needs the `minimal` preset, which drops animations and color eye candy:
 
 ```lua
-return { disabled_extras = { "lang.astro" } }
+return {
+  preset = "minimal",
+  disabled_extras = { "lang.astro" }, -- optional: languages to skip anyway
+}
 ```
 
-The neovim repo's README lists the extras and what each one needs.
+`disabled_groups` and `disabled_plugins` turn off whole plugin files or single plugins. The neovim
+repo's README covers all four settings and lists the presets.
 
 ### The picker
 
