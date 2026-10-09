@@ -60,7 +60,7 @@ While a mode like `Alt+a` is active, a Zebar popup lists its keys (only for inst
 
 ### Why is Alt the leader key?
 
-Windows reserves `Win+L` to lock the screen and nothing can take it over, so a Hyprland-style `Win+l` would never work. Alt also gets through remote desktop clients without grabbing the keyboard. When an app needs its own Alt shortcuts, `Alt+Shift+P` pauses GlazeWM.
+Windows reserves `Win+L` to lock the screen and nothing can take it over, so a Hyprland-style `Win+l` would never work. Alt also gets through remote desktop clients without grabbing the keyboard. When an app needs its own Alt shortcuts, `Alt+Shift+P` pauses GlazeWM. Pressing the Windows key on its own no longer opens Start (a small AutoHotkey script stops it, so Super habits from Linux don't keep popping it open), while combinations like `Win+L` still work.
 
 ## 🧰 What's Inside
 
