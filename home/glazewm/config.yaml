@@ -160,6 +160,13 @@ binding_modes:
         bindings: ['t']
       - commands: ['shell-exec wezterm-gui start gdu', 'wm-disable-binding-mode --name apps']
         bindings: ['u']
+      # A standalone console rather than WezTerm (`t` already covers that).
+      - commands: ['shell-exec pwsh', 'wm-disable-binding-mode --name apps']
+        bindings: ['p']
+      # shell-exec cannot elevate, so this goes through Start-Process -Verb RunAs and its UAC
+      # prompt. --always-new-process keeps a running unelevated WezTerm from adopting the window.
+      - commands: ['shell-exec --hide-window pwsh -NoProfile -Command Start-Process wezterm-gui -ArgumentList ''start'',''--always-new-process'' -Verb RunAs', 'wm-disable-binding-mode --name apps']
+        bindings: ['shift+p']
       - commands: ['wm-disable-binding-mode --name apps']
         bindings: ['escape', 'alt+a']
 

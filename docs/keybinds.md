@@ -71,6 +71,8 @@ Each key starts an app and leaves the mode.
 | `x` | LibreOffice Calc |
 | `t` | WezTerm |
 | `u` | gdu (disk usage, in WezTerm) |
+| `p` | PowerShell in its own console window |
+| `P` | WezTerm as Administrator, so its pwsh is elevated (asks UAC) |
 | `Esc` / `Alt+a` | Leave apps mode |
 
 ### Go mode (`Alt+g`)
