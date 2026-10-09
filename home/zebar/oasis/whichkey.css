@@ -24,11 +24,11 @@
   text-transform: uppercase;
 }
 
-/* Column-major fill, so related keys stay together down a column. */
+/* Column-major fill, so related keys stay together down a column. whichkey.html sets the row
+   count inline from the number of hints. */
 .entries {
   display: grid;
   grid-auto-flow: column;
-  grid-template-rows: repeat(4, auto);
   column-gap: 28px;
   row-gap: 3px;
   white-space: nowrap;
