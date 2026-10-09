@@ -51,14 +51,26 @@ function Read-LocalPackageIni([string] $path) {
 }
 
 $script:installed_scoop_apps = $null
+$script:failed_scoop_apps = $null
 $script:known_buckets = $null
 $script:healthy_buckets = @()
 
+# An install that died partway (a dropped download) still appears in `scoop list`, flagged
+# "Install failed" under Info. Counting it as installed made every later run skip it for good.
+function Read-ScoopList {
+  $apps = @(scoop list 6>$null)
+  $script:failed_scoop_apps = @($apps | Where-Object { "$($_.Info)" -match 'Install failed' } | ForEach-Object Name)
+  $script:installed_scoop_apps = @($apps | ForEach-Object Name | Where-Object { $_ -notin $script:failed_scoop_apps })
+}
+
 function Get-InstalledScoopApps {
-  if ($null -eq $script:installed_scoop_apps) {
-    $script:installed_scoop_apps = @(scoop list 6>$null | ForEach-Object Name)
-  }
+  if ($null -eq $script:installed_scoop_apps) { Read-ScoopList }
   $script:installed_scoop_apps
+}
+
+function Get-FailedScoopApps {
+  if ($null -eq $script:failed_scoop_apps) { Read-ScoopList }
+  $script:failed_scoop_apps
 }
 
 function Get-ScoopRootDir {
@@ -145,12 +157,22 @@ function Install-Package($entry) {
     Write-Warn "$($entry.key) skipped: winget is not available on this machine"
     return
   }
-  if ($entry.source -eq 'scoop') { Add-ScoopBucket $entry.bucket }
+  if ($entry.source -eq 'scoop') {
+    Add-ScoopBucket $entry.bucket
+    # `scoop install` refuses to run over a failed install's leftovers.
+    if ($entry.id -in (Get-FailedScoopApps)) {
+      Write-Warn "$($entry.key) has a failed install left over, clearing it first"
+      Reset-FailedScoopInstall $entry
+    }
+  }
 
   for ($attempt = 1; $attempt -le $max_install_attempts; $attempt++) {
     $failure = Invoke-PackageInstall $entry
     if (-not $failure) {
-      if ($entry.source -eq 'scoop') { $script:installed_scoop_apps += $entry.id }
+      if ($entry.source -eq 'scoop') {
+        $script:installed_scoop_apps += $entry.id
+        $script:failed_scoop_apps = @($script:failed_scoop_apps | Where-Object { $_ -ne $entry.id })
+      }
       Write-Ok $entry.key
       return
     }
