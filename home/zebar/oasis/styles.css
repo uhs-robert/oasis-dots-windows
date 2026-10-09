@@ -85,6 +85,10 @@ button.logo {
   cursor: pointer;
 }
 
+.workspace.empty {
+  opacity: 0.5;
+}
+
 .workspace.displayed {
   background: var(--surface_high);
   color: var(--fg);
@@ -130,6 +134,21 @@ button.logo {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.tray_group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tray_toggle {
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font: inherit;
+  cursor: pointer;
 }
 
 .tray_icon {
