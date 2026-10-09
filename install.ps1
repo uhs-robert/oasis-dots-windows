@@ -232,6 +232,15 @@ if (Test-StepEnabled 'post') {
     }
   }
 
+  # The which-key popup cannot see the filesystem, so it reads which apps exist from this file.
+  # Scoop only: a winget lookup per entry is slow, and the popup's apps all come from Scoop.
+  if ($is_desktop) {
+    $installed_names = @($installed_entries | Where-Object { $_.source -eq 'scoop' -and (Test-PackageInstalled $_) } | ForEach-Object name)
+    $installed_names_file = Join-Path $PSScriptRoot 'home/zebar/oasis/installed.json'
+    ConvertTo-Json -InputObject $installed_names -Compress | Set-Content -LiteralPath $installed_names_file
+    Write-Ok "wrote $($installed_names.Count) installed package names for the which-key popup"
+  }
+
   $glazewm_exe = Join-Path (Get-ScoopRoot) 'apps/glazewm/current/glazewm.exe'
   $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) 'GlazeWM.lnk'
   # A machine switched to headless would otherwise keep starting GlazeWM at sign-in.

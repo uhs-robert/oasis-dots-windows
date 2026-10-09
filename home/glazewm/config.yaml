@@ -188,6 +188,13 @@ binding_modes:
       - commands: ['wm-disable-binding-mode --name go']
         bindings: ['escape', 'alt+g']
 
+  # Read-only overview of the global binds, listed by the Zebar which-key popup. While a mode is
+  # active GlazeWM applies only that mode's binds, so nothing else fires until it is left.
+  - name: 'help'
+    keybindings:
+      - commands: ['wm-disable-binding-mode --name help']
+        bindings: ['escape', 'enter', 'alt+shift+oem_question']
+
 keybindings:
   - commands: ['focus --direction left']
     bindings: ['alt+h', 'alt+left']
@@ -213,6 +220,8 @@ keybindings:
     bindings: ['alt+a']
   - commands: ['wm-enable-binding-mode --name go']
     bindings: ['alt+g']
+  - commands: ['wm-enable-binding-mode --name help']
+    bindings: ['alt+shift+oem_question']
 
   - commands: ['wm-toggle-pause']
     bindings: ['alt+shift+p']

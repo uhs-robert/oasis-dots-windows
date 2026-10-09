@@ -36,6 +36,7 @@ GlazeWM with `Alt+Shift+p`.
 | `Alt+r` | Enter resize mode |
 | `Alt+a` | Enter apps mode |
 | `Alt+g` | Enter go mode |
+| `Alt+Shift+/` | Show this global list in the which-key popup (leave with `Esc`, `Enter` or `Alt+Shift+/`) |
 
 ### Resize mode (`Alt+r`)
 
@@ -88,7 +89,10 @@ Each key focuses the app's window, or starts it when none is open. Leaves the mo
 | `Esc` / `Alt+g` | Leave go mode |
 
 A Zebar which-key popup (bottom center of the primary monitor) lists the active mode's keys, and the bar
-shows the mode name, so the modes can be used without memorizing them. The full list is this page.
+shows the mode name, so the modes can be used without memorizing them. The apps and go lists show only
+the apps that are installed (`install.ps1` writes `home/zebar/oasis/installed.json`, and the popup shows
+everything when that file is missing). While a mode is active, GlazeWM applies only that mode's binds.
+The full list is this page.
 
 ## WezTerm
 

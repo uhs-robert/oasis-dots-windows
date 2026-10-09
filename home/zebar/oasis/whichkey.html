@@ -15,7 +15,9 @@
       import * as zebar from 'https://esm.sh/zebar@3.3';
 
       // What each binding mode's keys do, kept in sync with binding_modes in
-      // home/glazewm/config.yaml.
+      // home/glazewm/config.yaml. A hint is [key, label, requires?]: `requires` is the package name
+      // (as in packages/*.ini) whose absence from installed.json hides the hint. The help hints are
+      // the top-level keybindings of the same file.
       const mode_hints = {
         resize: [
           ['h j k l', 'size 2%'],
@@ -23,17 +25,61 @@
           ['esc enter', 'done'],
         ],
         apps: [
-          ['t', 'WezTerm'], ['e', 'nvim'], ['f', 'yazi'], ['u', 'gdu'],
-          ['c', 'qalc'], ['b', 'Firefox'], ['q', 'qutebrowser'], ['s', 'Slack'],
-          ['d', 'Discord'], ['m', 'Betterbird'], ['g', 'GIMP'], ['i', 'Inkscape'],
-          ['w', 'Writer'], ['x', 'Calc'],
+          ['t', 'WezTerm', 'wezterm'], ['e', 'nvim', 'neovim'], ['f', 'yazi', 'yazi'], ['u', 'gdu', 'gdu'],
+          ['c', 'qalc', 'qalculate'], ['b', 'Firefox', 'firefox'], ['q', 'qutebrowser', 'qutebrowser'], ['s', 'Slack', 'slack'],
+          ['d', 'Discord', 'discord'], ['m', 'Betterbird', 'betterbird'], ['g', 'GIMP', 'gimp'], ['i', 'Inkscape', 'inkscape'],
+          ['w', 'Writer', 'libreoffice'], ['x', 'Calc', 'libreoffice'],
         ],
         go: [
-          ['t', 'WezTerm'], ['f', 'yazi'], ['c', 'nvim (dotfiles)'], ['b', 'Firefox'],
-          ['q', 'qutebrowser'], ['m', 'Betterbird'], ['s', 'Slack'], ['d', 'Discord'],
+          ['t', 'WezTerm', 'wezterm'], ['f', 'yazi', 'yazi'], ['c', 'nvim (dotfiles)', 'neovim'], ['b', 'Firefox', 'firefox'],
+          ['q', 'qutebrowser', 'qutebrowser'], ['m', 'Betterbird', 'betterbird'], ['s', 'Slack', 'slack'], ['d', 'Discord', 'discord'],
           ['tab', 'last workspace'],
         ],
+        help: [
+          ['Alt+h j k l', 'focus (or arrows)'],
+          ['Alt+Shift+h j k l', 'move window'],
+          ['Alt+Ctrl+h j k l', 'workspace to monitor'],
+          ['Alt+1..9', 'workspace'],
+          ['Alt+Shift+1..9', 'window to workspace'],
+          ['Alt+. / Alt+,', 'next / prev workspace'],
+
+          ['Alt+d', 'recent workspace'],
+          ['Alt+r', 'resize mode'],
+          ['Alt+a', 'apps mode'],
+          ['Alt+g', 'go mode'],
+          ['Alt+Shift+/', 'this help'],
+          ['Alt+Enter', 'WezTerm'],
+
+          ['Alt+o', 'Run dialog'],
+          ['Alt+x / Alt+Shift+q', 'close'],
+          ['Alt+f', 'fullscreen'],
+          ['Alt+t', 'tiling'],
+          ['Alt+Shift+Space', 'floating'],
+          ['Alt+m', 'minimize'],
+
+          ['Alt+v', 'tiling direction'],
+          ['Alt+Shift+p', 'pause GlazeWM'],
+          ['Alt+Shift+r', 'reload config'],
+          ['Alt+Shift+w', 'redraw'],
+          ['Alt+Shift+e', 'exit GlazeWM'],
+        ],
       };
+
+      const column_count = 4;
+
+      // The installer lists the installed packages in installed.json. Zebar may cache widget files,
+      // hence the no-store and the unique query. Any failure shows every hint rather than none.
+      async function read_installed_names() {
+        try {
+          const response = await fetch(`./installed.json?t=${Date.now()}`, { cache: 'no-store' });
+          if (!response.ok) return null;
+          const names = await response.json();
+          return Array.isArray(names) ? new Set(names) : null;
+        } catch {
+          return null;
+        }
+      }
+      const installed_names = await read_installed_names();
 
       const root = document.getElementById('root');
 
@@ -62,6 +108,7 @@
 
       function panel(binding_mode, hints) {
         const entries = el('div', 'entries', '');
+        entries.style.gridTemplateRows = `repeat(${Math.ceil(hints.length / column_count)}, auto)`;
         for (const [key, label] of hints) {
           const entry = el('div', 'entry', '');
           entry.append(el('span', 'entry_key', key), el('span', 'entry_label', label));
@@ -83,7 +130,8 @@
 
       function update(output) {
         const binding_mode = output?.bindingModes?.[0];
-        const hints = binding_mode && mode_hints[binding_mode.name];
+        const mode_hint_list = binding_mode && mode_hints[binding_mode.name];
+        const hints = mode_hint_list?.filter(([, , requires]) => !requires || !installed_names || installed_names.has(requires));
         const mode_key = hints ? `${binding_mode.name}|${binding_mode.displayName ?? ''}` : '';
         if (mode_key === shown_mode_key) return;
         shown_mode_key = mode_key;
