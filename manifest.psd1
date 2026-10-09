@@ -2,6 +2,8 @@
 # Also a leading ~ and %VAR%. `when` is a package group ("ai") or key ("ai/claude-code").
 # `mode = 'desktop'` limits an entry to desktop installs; without `mode` it applies in every mode.
 # `filter` is a jq expression: the target becomes a filtered copy instead of a symlink.
+# `copy = $true` writes a plain copy instead of a symlink, for files the app rewrites itself.
+# Filtered and copied targets are re-written on every install, so repo edits still arrive.
 @{
   theme = 'moonlight'
 
@@ -25,7 +27,8 @@
     @{ source = '{repo}\home\yazi\keymap.toml'; target = '%APPDATA%\yazi\config\keymap.toml' }
     @{ source = '{repo}\home\yazi\yazi.toml'; target = '%APPDATA%\yazi\config\yazi.toml' }
     @{ source = '{repo}\home\yazi\theme.toml'; target = '%APPDATA%\yazi\config\theme.toml' }
-    @{ source = '{repo}\home\yazi\package.toml'; target = '%APPDATA%\yazi\config\package.toml' }
+    # `ya pkg install` records plugin hashes here, and git's CRLF conversion on Windows changes them.
+    @{ source = '{repo}\home\yazi\package.toml'; target = '%APPDATA%\yazi\config\package.toml'; copy = $true }
     @{ source = '{repo}\home\yazi\init.lua'; target = '%APPDATA%\yazi\config\init.lua' }
     @{ source = '{oasis-dots}\home\yazi\.config\yazi\plugins\folder-rules.yazi'; target = '%APPDATA%\yazi\config\plugins\folder-rules.yazi' }
     @{ source = '{repo}\home\yazi\plugins\jump-to.yazi'; target = '%APPDATA%\yazi\config\plugins\jump-to.yazi' }
