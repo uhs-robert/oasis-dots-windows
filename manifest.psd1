@@ -23,8 +23,8 @@
     @{ source = '{repo}\home\nushell\config.nu'; target = '%APPDATA%\nushell\config.nu'; when = 'shells/nu' }
     @{ source = '{repo}\home\nushell\env.nu'; target = '%APPDATA%\nushell\env.nu'; when = 'shells/nu' }
     # Copied, not linked: Zebar rewrites its settings file on start (bumping `$schema` to its own
-    # version), which would otherwise show up as changes in this repo. Re-copied on every install.
-    @{ source = '{repo}\home\zebar\settings.json'; target = '~\.glzr\zebar\settings.json'; mode = 'desktop'; filter = '.' }
+    # version), which would otherwise show up as changes in this repo.
+    @{ source = '{repo}\home\zebar\settings.json'; target = '~\.glzr\zebar\settings.json'; mode = 'desktop'; copy = $true }
     @{ source = '{repo}\home\zebar\oasis'; target = '~\.glzr\zebar\oasis'; mode = 'desktop' }
     @{ source = '{repo}\home\yazi\keymap.toml'; target = '%APPDATA%\yazi\config\keymap.toml' }
     @{ source = '{repo}\home\yazi\yazi.toml'; target = '%APPDATA%\yazi\config\yazi.toml' }
