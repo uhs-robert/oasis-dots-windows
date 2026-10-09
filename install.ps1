@@ -107,6 +107,26 @@ function Get-SelectionTokens($optional_entries) {
   $picked
 }
 
+# Startup-folder shortcuts this repo manages; `$wanted` false removes one left by an earlier run.
+function Sync-StartupShortcut([string] $name, [string] $target_exe, [string] $arguments, [bool] $wanted) {
+  $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) "$name.lnk"
+  if (-not $wanted) {
+    if (Test-Path -LiteralPath $shortcut_path) {
+      Remove-Item -LiteralPath $shortcut_path
+      Write-Ok "removed $name from Startup"
+    }
+    return
+  }
+  if (Test-Path -LiteralPath $shortcut_path) { return }
+
+  $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut_path)
+  $shortcut.TargetPath = $target_exe
+  $shortcut.Arguments = $arguments
+  $shortcut.WorkingDirectory = Split-Path $target_exe
+  $shortcut.Save()
+  Write-Ok "$name added to Startup"
+}
+
 function Invoke-SystemScript([string] $name) {
   $changed = & (Join-Path $PSScriptRoot "system/$name.ps1")
   if ($changed) { Write-Ok "$name applied" } else { Write-Skip "$name already set" }
@@ -242,20 +262,15 @@ if (Test-StepEnabled 'post') {
   }
 
   $glazewm_exe = Join-Path (Get-ScoopRoot) 'apps/glazewm/current/glazewm.exe'
-  $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) 'GlazeWM.lnk'
-  # A machine switched to headless would otherwise keep starting GlazeWM at sign-in.
-  if (-not $is_desktop -and (Test-Path -LiteralPath $shortcut_path)) {
-    Remove-Item -LiteralPath $shortcut_path
-    Write-Ok 'removed GlazeWM from Startup'
-  }
+  $autohotkey_exe = Join-Path (Get-ScoopRoot) 'apps/autohotkey/current/v2/AutoHotkey32.exe'
+  $win_key_script = Join-Path $PSScriptRoot 'home/autohotkey/win-key.ahk'
+  # A machine switched to headless drops these, or it would keep starting desktop programs at sign-in.
+  Sync-StartupShortcut 'GlazeWM' $glazewm_exe '' ($is_desktop -and (Test-Path -LiteralPath $glazewm_exe))
+  Sync-StartupShortcut 'oasis-win-key' $autohotkey_exe "`"$win_key_script`"" ($is_desktop -and (Test-Path -LiteralPath $autohotkey_exe))
+  # Harmless to start right away, unlike GlazeWM: #SingleInstance replaces a running copy.
+  if ($is_desktop -and (Test-Path -LiteralPath $autohotkey_exe)) { Start-Process $autohotkey_exe "`"$win_key_script`"" }
+
   if ($is_desktop -and (Test-Path -LiteralPath $glazewm_exe)) {
-    if (-not (Test-Path -LiteralPath $shortcut_path)) {
-      $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut_path)
-      $shortcut.TargetPath = $glazewm_exe
-      $shortcut.WorkingDirectory = Split-Path $glazewm_exe
-      $shortcut.Save()
-      Write-Ok 'GlazeWM added to Startup'
-    }
     if (-not $unattended -and -not (Get-Process glazewm -ErrorAction SilentlyContinue)) {
       if ((Read-Host 'Start GlazeWM now? (y/N)') -match '^y') { Start-Process $glazewm_exe }
     }

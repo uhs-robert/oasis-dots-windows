@@ -1,7 +1,7 @@
 #Requires -Version 7
 <#
 .SYNOPSIS
-Removes the links, user environment variables and Startup shortcut this repo created, restoring backups.
+Removes the links, user environment variables and Startup shortcuts this repo created, restoring backups.
 #>
 [CmdletBinding()]
 param()
@@ -20,11 +20,13 @@ foreach ($link in $manifest.links) { Remove-ManifestLink $link $context }
 Write-Step 'Clearing environment variables'
 foreach ($entry in $manifest.environment) { Remove-ManifestEnvironmentVariable $entry }
 
-Write-Step 'Removing Startup shortcut'
-$shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) 'GlazeWM.lnk'
-if (Test-Path -LiteralPath $shortcut_path) {
-  Remove-Item -LiteralPath $shortcut_path
-  Write-Ok 'removed GlazeWM.lnk'
+Write-Step 'Removing Startup shortcuts'
+foreach ($shortcut_name in 'GlazeWM', 'oasis-win-key') {
+  $shortcut_path = Join-Path ([Environment]::GetFolderPath('Startup')) "$shortcut_name.lnk"
+  if (Test-Path -LiteralPath $shortcut_path) {
+    Remove-Item -LiteralPath $shortcut_path
+    Write-Ok "removed $shortcut_name.lnk"
+  }
 }
 
 Write-Step 'Done'

@@ -59,7 +59,7 @@ The `gui-` files are only read in desktop mode.
   zoxide, lsd, bat, less, fd, ripgrep, PSReadLine, PSFzf), editor (neovim, zig, tree-sitter), git
   (lazygit, delta, difftastic, mergiraf, gh) and files (yazi, ffmpeg, poppler, imagemagick, jq).
 - `packages/gui-required.ini` (desktop only): desktop (GlazeWM, Zebar, WezTerm, Flow Launcher,
-  JetBrainsMono Nerd Font).
+  JetBrainsMono Nerd Font, AutoHotkey for the Windows-key script).
 
 **Optional** are picked at install time. `packages/optional.ini` is offered in both modes:
 
