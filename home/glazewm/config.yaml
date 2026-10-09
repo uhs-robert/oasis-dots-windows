@@ -261,13 +261,24 @@ keybindings:
 
   # Send the whole workspace to the monitor in that direction.
   - commands: ['move-workspace --direction left']
-    bindings: ['alt+ctrl+h']
+    bindings: ['alt+ctrl+shift+h']
   - commands: ['move-workspace --direction right']
-    bindings: ['alt+ctrl+l']
+    bindings: ['alt+ctrl+shift+l']
   - commands: ['move-workspace --direction up']
-    bindings: ['alt+ctrl+k']
+    bindings: ['alt+ctrl+shift+k']
   - commands: ['move-workspace --direction down']
+    bindings: ['alt+ctrl+shift+j']
+
+  # Hyprland-style: Ctrl+h/l steps through the open workspaces, Ctrl+j/k carries the focused
+  # window to the previous/next one and follows it. GlazeWM's move doesn't follow on its own.
+  - commands: ['focus --prev-active-workspace']
+    bindings: ['alt+ctrl+h']
+  - commands: ['focus --next-active-workspace']
+    bindings: ['alt+ctrl+l']
+  - commands: ['move --prev-active-workspace', 'focus --prev-active-workspace']
     bindings: ['alt+ctrl+j']
+  - commands: ['move --next-active-workspace', 'focus --next-active-workspace']
+    bindings: ['alt+ctrl+k']
 
   - commands: ['focus --workspace 1']
     bindings: ['alt+1']
