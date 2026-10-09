@@ -56,7 +56,7 @@ The `gui-` files are only read in desktop mode.
 **Required** are always installed:
 
 - `packages/required.ini` (both modes): installer (git, 7zip, fzf, just), shell (pwsh, starship,
-  zoxide, lsd, bat, less, fd, ripgrep, PSReadLine, PSFzf), editor (neovim, zig, tree-sitter), git
+  zoxide, lsd, bat, less, fd, ripgrep, gsudo, PSReadLine, PSFzf), editor (neovim, zig, tree-sitter), git
   (lazygit, delta, difftastic, mergiraf, gh) and files (yazi, ffmpeg, poppler, imagemagick, jq).
 - `packages/gui-required.ini` (desktop only): desktop (GlazeWM, Zebar, WezTerm, Flow Launcher,
   JetBrainsMono Nerd Font, AutoHotkey for the Windows-key script).

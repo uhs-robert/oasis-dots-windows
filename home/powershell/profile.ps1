@@ -56,6 +56,10 @@ if (Test-Command lsd) {
   function lt { lsd --tree @args }
 }
 
+# An alias rather than relying on Scoop's `sudo` shim: on Windows 11 24H2 the built-in sudo.exe in
+# System32 precedes the user PATH and would win.
+if (Test-Command gsudo) { Set-Alias sudo gsudo }
+
 # Prompt and navigation
 
 if (Test-Command starship) { Invoke-Expression (& starship init powershell) }
