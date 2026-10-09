@@ -241,6 +241,20 @@ function Install-ManifestLink($link, $context) {
   $result
 }
 
+# What a link's target holds now, without changing anything: 'linked' (points at the source),
+# 'copied' (a copy or filtered copy this repo wrote), 'missing', 'unmanaged' (something else is
+# there) or 'no-source' (the source is missing, for example a repo that failed to clone).
+function Get-ManifestLinkState($link, $context) {
+  $source = Expand-ManifestPath $link.source $context
+  $target = Expand-ManifestPath $link.target $context
+  $state = if (-not (Test-Path -LiteralPath $source)) { 'no-source' }
+  elseif (-not ($existing = Get-LinkItem $target)) { 'missing' }
+  elseif ((Get-LinkDestination $existing) -eq (Get-NormalizedPath $source)) { 'linked' }
+  elseif ($target -in (Get-OwnedFiles $context)) { 'copied' }
+  else { 'unmanaged' }
+  [pscustomobject]@{ state = $state; source = $source; target = $target }
+}
+
 function Remove-ManifestLink($link, $context) {
   $target = Expand-ManifestPath $link.target $context
   $existing = Get-LinkItem $target
@@ -276,5 +290,5 @@ function Remove-ManifestEnvironmentVariable($entry) {
 }
 
 Export-ModuleMember -Function Test-Elevated, Get-StateDir, Get-LocalPackageFile, Get-ScoopRoot, Read-Manifest, New-ManifestContext,
-  Expand-ManifestPath, Test-ManifestCondition, Sync-Repo, Install-ManifestLink, Remove-ManifestLink,
+  Expand-ManifestPath, Test-ManifestCondition, Sync-Repo, Install-ManifestLink, Remove-ManifestLink, Get-ManifestLinkState,
   Set-ManifestEnvironmentVariable, Remove-ManifestEnvironmentVariable

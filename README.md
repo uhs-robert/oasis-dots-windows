@@ -101,6 +101,7 @@ Apps specific to one machine can go in `~/.config/oasis-dots-windows/packages.in
 ```powershell
 just update      # pull everything, update all packages (topgrade if installed), re-apply
 just pick        # re-open the optional package picker
+just doctor      # check this machine's setup and print a fix for each problem
 just link        # re-apply links and environment variables only
 just uninstall   # remove links and variables, restore backups
 ```

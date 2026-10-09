@@ -209,8 +209,19 @@ just update    # git pull this repo, pull repos/*, topgrade (or scoop update *),
 | `just update`        | Pull everything, update packages and re-apply, without prompts. |
 | `just pick`          | Re-open the optional package picker (`-reselect`).              |
 | `just link`          | Re-apply links and environment variables only.                  |
+| `just doctor`        | Check the setup read-only; exits 1 if anything is broken.       |
 | `just uninstall`     | Run `uninstall.ps1`.                                            |
 | `just lint`          | Run PSScriptAnalyzer over the scripts, if installed.            |
+
+When something behaves oddly, start with `just doctor`. It changes nothing and checks the packages,
+the commands configs rely on (`gcc`, `tree-sitter`, `gsudo`, ...), every config link, the
+environment variables, the cloned repos and, in desktop mode, the startup items. Each problem comes
+with the command that fixes it. It also tells a missing command apart from one that is installed
+but not yet on this session's PATH, which happens to anything GlazeWM launched before the install:
+sign out and back in.
+
+The installer warns about the same thing at the end of a run that changed PATH or another user
+environment variable.
 
 ## Uninstall
 

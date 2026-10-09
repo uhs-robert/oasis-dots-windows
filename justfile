@@ -16,6 +16,10 @@ update:
   if (Get-Command topgrade -ErrorAction SilentlyContinue) { topgrade } else { scoop update * }
   ./install.ps1 -unattended
 
+# Check packages, PATH, links, environment, repos and startup items without changing anything.
+doctor:
+  ./doctor.ps1
+
 # Re-open the optional package picker.
 pick:
   ./install.ps1 -reselect
