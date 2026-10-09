@@ -9,9 +9,9 @@ update:
   git pull --ff-only
   Get-ChildItem repos -Directory -ErrorAction SilentlyContinue | ForEach-Object { git -C $_.FullName pull --ff-only }
   # Scoop skips updating AutoHotkey while the win-key script runs it; install.ps1 restarts the script.
+  # home/topgrade/topgrade.toml does the same, but this also covers the plain Scoop fallback.
   Get-Process AutoHotkey* -ErrorAction SilentlyContinue | Where-Object Path -like (Join-Path ($env:SCOOP ?? "$HOME\scoop") 'apps\autohotkey\*') | Stop-Process
-  # Windows Update is left to Windows itself (or NinjaOne): topgrade's step needs admin and can reboot.
-  if (Get-Command topgrade -ErrorAction SilentlyContinue) { topgrade --disable system } else { scoop update * }
+  if (Get-Command topgrade -ErrorAction SilentlyContinue) { topgrade } else { scoop update * }
   ./install.ps1 -unattended
 
 # Re-open the optional package picker.

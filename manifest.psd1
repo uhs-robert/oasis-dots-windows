@@ -36,6 +36,7 @@
     @{ source = '{repo}\home\yazi\plugins\jump-to.yazi'; target = '%APPDATA%\yazi\config\plugins\jump-to.yazi' }
     @{ source = '{oasis.nvim}\extras\yazi\themes\dark\flavors\oasis-{theme}-dark.yazi'; target = '%APPDATA%\yazi\config\flavors\oasis-{theme}-dark.yazi' }
     @{ source = '{neovim}'; target = '%LOCALAPPDATA%\nvim' }
+    @{ source = '{repo}\home\topgrade\topgrade.toml'; target = '%APPDATA%\topgrade.toml'; when = 'utilities/topgrade' }
     @{ source = '{oasis-dots}\home\claude\.claude\skills'; target = '~\.claude\skills'; when = 'ai/claude-code' }
     @{ source = '{oasis-dots}\home\claude\.claude\keybindings.json'; target = '~\.claude\keybindings.json'; when = 'ai/claude-code' }
     # The Linux settings carry keeptabs hooks that do not exist on Windows.

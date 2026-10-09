@@ -1,0 +1,13 @@
+# Linked to %APPDATA%\topgrade.toml. Custom commands run in pwsh.
+
+[misc]
+# Windows Update is left to Windows itself (or NinjaOne): this step needs admin and can reboot.
+disable = ["system"]
+
+# Scoop skips updating AutoHotkey while the win-key script runs on it, so the script is stopped
+# for the update and started again from its Startup shortcut (only present in desktop mode).
+[pre_commands]
+"Stop win-key script" = '''Get-Process AutoHotkey* -ErrorAction SilentlyContinue | Where-Object Path -like (Join-Path ($env:SCOOP ?? "$HOME\scoop") 'apps\autohotkey\*') | Stop-Process'''
+
+[post_commands]
+"Start win-key script" = '''$win_key_shortcut = Join-Path ([Environment]::GetFolderPath('Startup')) 'oasis-win-key.lnk'; if (Test-Path $win_key_shortcut) { Start-Process $win_key_shortcut }'''

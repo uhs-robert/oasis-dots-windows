@@ -135,6 +135,7 @@ mode. Those are the WezTerm and Zebar links and `GLAZEWM_CONFIG_PATH`.
 | `%APPDATA%\yazi\config\*` (keymap, yazi, theme, package, init) and plugins                 | this repo `home\yazi`, oasis-dots       | always           |
 | `%APPDATA%\yazi\config\flavors\oasis-moonlight-dark.yazi`                                  | oasis.nvim                              | always           |
 | `%LOCALAPPDATA%\nvim`                                                                      | neovim repo                             | always           |
+| `%APPDATA%\topgrade.toml`                                                                  | this repo `home\topgrade`               | `utilities/topgrade` |
 | `~\.claude\skills`, `~\.claude\keybindings.json`, `~\.claude\settings.json`                | oasis-dots                              | `ai/claude-code` |
 | `~\.codex\skills`                                                                          | oasis-dots                              | `ai/codex`       |
 
