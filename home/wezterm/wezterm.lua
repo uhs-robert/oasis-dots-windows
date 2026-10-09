@@ -35,6 +35,26 @@ config.font_size = 12.0
 -- when there is no GPU driver, as on a Windows Server reached over RDP. The OpenGL default
 -- fails there ("OpenGL implementation is too old"), and on real GPUs WebGpu works too.
 config.front_end = "WebGpu"
+
+-- InstallationType is "Server" on Windows Server; workstations say "Client".
+local function is_windows_server()
+  local ok, success, stdout = pcall(wezterm.run_child_process, {
+    "reg",
+    "query",
+    "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+    "/v",
+    "InstallationType",
+  })
+  return ok and success and stdout:find("Server") ~= nil
+end
+
+-- Without a GPU every frame is drawn in software, so a blinking cursor alone keeps a core busy
+-- forever, even in an idle terminal.
+if is_windows_server() then
+  config.cursor_blink_rate = 0
+  config.max_fps = 30
+  config.animation_fps = 1
+end
 config.scrollback_lines = 5000
 config.audible_bell = "Disabled"
 -- GlazeWM owns window placement; keep only the resize border.
