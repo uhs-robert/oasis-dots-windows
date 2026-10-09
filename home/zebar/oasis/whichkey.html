@@ -96,12 +96,6 @@
 
       glazewm.onOutput(update);
       glazewm.onError(error => show_error(`glazewm provider: ${error}`));
-
-      // TEMPORARY for testing on the server: proves the window exists and where it sits. Remove before merge.
-      root.replaceChildren(panel({ name: 'which-key ready' }, [['', 'this panel hides in 3 s']]));
-      setTimeout(() => {
-        if (shown_mode_key === null || shown_mode_key === '') root.replaceChildren();
-      }, 3000);
     </script>
   </body>
 </html>
