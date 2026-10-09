@@ -56,6 +56,32 @@ function Update-SessionPath {
       Where-Object { $_ } | Select-Object -Unique) -join ';'
 }
 
+# Programs that are already running, GlazeWM and everything it launches included, keep the
+# environment they started with. A change made here reaches them only after signing out and in.
+function Get-PersistedEnvironment {
+  $environment = @{}
+  foreach ($variable in [Environment]::GetEnvironmentVariables('User').GetEnumerator()) { $environment[$variable.Key] = $variable.Value }
+  $environment['Path (machine)'] = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+  $environment
+}
+
+function Write-EnvironmentChangeNotice($before, $after) {
+  $changed_names = @($before.Keys + $after.Keys | Select-Object -Unique | Where-Object { $before[$_] -ne $after[$_] } | Sort-Object)
+  if (-not $changed_names) { return }
+
+  Write-Step 'Environment changed'
+  $path_before = @("$($before['Path']);$($before['Path (machine)'])" -split ';')
+  $added_path_dirs = @("$($after['Path']);$($after['Path (machine)'])" -split ';' | Where-Object { $_ -and $_ -notin $path_before })
+  foreach ($directory in $added_path_dirs) { Write-Warn "added to PATH: $directory" }
+  $other_names = @($changed_names | Where-Object { $_ -notin 'Path', 'Path (machine)' })
+  if ($other_names) { Write-Warn "changed: $($other_names -join ', ')" }
+  if ($is_desktop) {
+    Write-Warn 'programs already running (GlazeWM and anything it launches) still see the old values: sign out and back in'
+  } else {
+    Write-Warn 'open sessions still see the old values: start a new SSH session'
+  }
+}
+
 function Read-SavedSelection {
   if (-not (Test-Path -LiteralPath $selection_file)) { return @() }
   @(Get-Content -LiteralPath $selection_file | ForEach-Object Trim | Where-Object { $_ })
@@ -132,6 +158,7 @@ function Invoke-SystemScript([string] $name) {
   if ($changed) { Write-Ok "$name applied" } else { Write-Skip "$name already set" }
 }
 
+$environment_before = Get-PersistedEnvironment
 $install_mode = Resolve-InstallMode
 $is_desktop = $install_mode -eq 'desktop'
 Write-Step "Install mode: $install_mode"
@@ -277,6 +304,8 @@ if (Test-StepEnabled 'post') {
     }
   }
 }
+
+Write-EnvironmentChangeNotice $environment_before (Get-PersistedEnvironment)
 
 if ($missing_entries.Count -gt 0) {
   Write-Step "Done, but $($missing_entries.Count) package(s) did not install"
