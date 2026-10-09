@@ -16,7 +16,7 @@ GlazeWM with `Alt+Shift+p`.
 | --- | --- |
 | `Alt+h/j/k/l` (or arrows) | Focus left/down/up/right |
 | `Alt+Shift+h/j/k/l` (or arrows) | Move window left/down/up/right |
-| `Alt+1` to `Alt+9` | Focus workspace 1 to 9 |
+| `Alt+1` to `Alt+9` | Focus workspace 1 to 9 (1 to 5 always show in the bar) |
 | `Alt+Shift+1` to `Alt+Shift+9` | Move window to workspace and focus it |
 | `Alt+Ctrl+h/j/k/l` | Move the whole workspace to the monitor in that direction |
 | `Alt+.` / `Alt+,` | Next / previous active workspace |

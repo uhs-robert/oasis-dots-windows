@@ -63,7 +63,7 @@ Windows reserves `Win+L` to lock the screen and nothing can take it over, so a H
 
 ## 🧰 What's Inside
 
-- **Desktop:** [GlazeWM](https://github.com/glzr-io/glazewm) with i3/Hyprland-style modes, a [Zebar](https://github.com/glzr-io/zebar) bar and Flow Launcher in place of rofi.
+- **Desktop:** [GlazeWM](https://github.com/glzr-io/glazewm) with i3/Hyprland-style modes, a [Zebar](https://github.com/glzr-io/zebar) bar (workspaces, stats and the system tray) and Flow Launcher in place of rofi.
 - **Terminal:** WezTerm standing in for both kitty and tmux.
 - **Shell:** PowerShell 7 set up to feel like zsh (vi mode, fzf completion, starship, zoxide, your functions), with Nushell as an option.
 - **Tools:** nvim, yazi, lazygit, ripgrep, fd, bat, delta and friends, always installed.

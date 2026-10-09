@@ -126,6 +126,18 @@ button.logo {
   font-weight: bold;
 }
 
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tray_icon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .stat_icon {
   margin-right: 6px;
 }

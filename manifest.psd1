@@ -49,6 +49,8 @@
     @{ name = 'GLAZEWM_CONFIG_PATH'; value = '{repo}\home\glazewm\config.yaml'; mode = 'desktop' }
     # lazygit merges comma-separated files, later wins.
     @{ name = 'LG_CONFIG_FILE'; value = '{oasis-dots}\home\lazygit\.config\lazygit\config.yml,{repo}\home\lazygit\windows.yml' }
+    # GlazeWM commands expand %SCOOP% to reach Scoop apps without a shell. Scoop itself reads it too.
+    @{ name = 'SCOOP'; value = '{scoop}' }
     @{ name = 'YAZI_FILE_ONE'; value = '{scoop}\apps\git\current\usr\bin\file.exe' }
   )
 }

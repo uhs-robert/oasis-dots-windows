@@ -16,6 +16,7 @@
         cpu: { type: 'cpu' },
         memory: { type: 'memory' },
         network: { type: 'network' },
+        systray: { type: 'systray' },
         date: { type: 'date', formatting: 'EEE d MMM  HH:mm' },
       });
 
@@ -32,8 +33,9 @@
         clock: '',
       };
 
+      // Runs the exe directly: going through launch.ps1 cost a cold pwsh start plus a Start Menu search.
       const flow_launcher_command =
-        'shell-exec --hide-window pwsh -NoProfile -ExecutionPolicy Bypass -File %OASIS_DOTS_WINDOWS%\\home\\glazewm\\scripts\\launch.ps1 -shortcut Flow*Launcher';
+        'shell-exec %SCOOP%\\apps\\flow-launcher\\current\\Flow.Launcher.exe';
 
       function el(tag, class_name, text, attributes) {
         const node = document.createElement(tag);
@@ -66,6 +68,33 @@
         return container;
       }
 
+      // The bar re-renders on every CPU/memory tick, but the tray rarely changes. Its node is kept
+      // and re-attached, and only rebuilt when the icon list changes, since software-rendered
+      // WebView2 makes redundant image decodes costly.
+      const tray = el('div', 'tray');
+      let tray_signature = null;
+
+      function tray_section(systray) {
+        const icons_now = systray.icons ?? [];
+        const signature = icons_now.map(i => `${i.id}|${i.iconHash}|${i.tooltip}`).join('\n');
+        if (signature !== tray_signature) {
+          tray_signature = signature;
+          tray.replaceChildren(
+            ...icons_now.map(icon => {
+              const node = el('img', 'tray_icon', null, {
+                src: icon.iconUrl,
+                title: icon.tooltip,
+                alt: '',
+                'data-tray-id': icon.id,
+              });
+              node.draggable = false;
+              return node;
+            }),
+          );
+        }
+        return tray;
+      }
+
       function mode_section(binding_mode) {
         return el('span', 'mode_name', binding_mode.displayName ?? binding_mode.name);
       }
@@ -82,7 +111,7 @@
       }
 
       function render(output) {
-        const { glazewm, cpu, memory, network, date } = output;
+        const { glazewm, cpu, memory, network, systray, date } = output;
         const app = el('div', 'app');
 
         const left = el('div', 'left');
@@ -117,6 +146,7 @@
             stat('cpu', icons.cpu, `${Math.round(cpu.usage)}%`, cpu.usage > 85 ? 'high_usage' : ''),
           );
         }
+        if (systray?.icons?.length) right.append(tray_section(systray));
         if (date) right.append(stat('clock', icons.clock, date.formatted));
 
         app.append(left, center, right);
@@ -129,6 +159,16 @@
         const command = event.target.closest('[data-command]')?.dataset.command;
         if (command) providers.outputMap.glazewm?.runCommand(command);
       });
+
+      // Mouse buttons: 0 left, 2 right. Other buttons are ignored.
+      root.addEventListener('pointerdown', event => {
+        const icon_id = event.target.closest('[data-tray-id]')?.dataset.trayId;
+        const systray = providers.outputMap.systray;
+        if (!icon_id || !systray) return;
+        if (event.button === 0) systray.onLeftClick(icon_id);
+        else if (event.button === 2) systray.onRightClick(icon_id);
+      });
+      root.addEventListener('contextmenu', event => event.preventDefault());
 
       providers.onOutput(() => render(providers.outputMap));
       render(providers.outputMap);
