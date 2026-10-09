@@ -64,9 +64,9 @@
         wifi: '\uf1eb',
         ethernet: '\u{f0200}',
         offline: '\u{f05aa}',
-        clock: '\uf017',
-        tray_collapsed: '\uf053',
-        tray_expanded: '\uf054',
+        // The icons open to the chevron's right, so it points that way while collapsed.
+        tray_collapsed: '\uf054',
+        tray_expanded: '\uf053',
       };
 
       // Runs the exe directly: going through launch.ps1 cost a cold pwsh start plus a Start Menu search.
@@ -94,10 +94,10 @@
       }
 
       function stat(class_name, icon, extra_class) {
-        const icon_node = el('span', 'stat_icon', icon);
+        const icon_node = icon ? el('span', 'stat_icon', icon) : null;
         const text_node = el('span', extra_class);
         const node = el('div', class_name);
-        node.append(icon_node, text_node);
+        node.append(...[icon_node, text_node].filter(Boolean));
         return { node, icon_node, text_node };
       }
 
@@ -119,7 +119,7 @@
       const network_stat = stat('network', icons.offline);
       const memory_stat = stat('memory', icons.memory);
       const cpu_stat = stat('cpu', icons.cpu);
-      const clock_stat = stat('clock', icons.clock);
+      const clock_stat = stat('clock');
 
       // The tray is rebuilt only when the icon list changes, since software-rendered WebView2
       // makes redundant image decodes costly.
@@ -141,7 +141,7 @@
       });
 
       const right = el('div', 'right');
-      right.append(paused, network_stat.node, memory_stat.node, cpu_stat.node, tray_group, clock_stat.node);
+      right.append(tray_group, paused, network_stat.node, memory_stat.node, cpu_stat.node, clock_stat.node);
 
       const app = el('div', 'app');
       app.append(left, center, right);
