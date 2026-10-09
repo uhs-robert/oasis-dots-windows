@@ -54,15 +54,17 @@
 
       const root = document.getElementById('root');
 
-      // Nerd Font codepoints (JetBrainsMono Nerd Font).
+      // Nerd Font codepoints (JetBrainsMono Nerd Font), escaped so editors and tools can't drop them.
       const icons = {
-        logo: '',
-        cpu: '',
-        memory: '',
-        wifi: '',
+        logo: '\uf17a',
+        cpu: '\uf4bc',
+        memory: '\uf2db',
+        wifi: '\uf1eb',
         ethernet: '\u{f0200}',
         offline: '\u{f05aa}',
-        clock: '',
+        clock: '\uf017',
+        tray_collapsed: '\uf053',
+        tray_expanded: '\uf054',
       };
 
       // Runs the exe directly: going through launch.ps1 cost a cold pwsh start plus a Start Menu search.
@@ -122,8 +124,22 @@
       const tray = el('div', 'tray');
       let tray_signature = null;
 
+      // Collapsed by default, like the Windows tray's overflow; the chevron expands it.
+      let is_tray_expanded = false;
+      const tray_toggle = el('button', 'tray_toggle', icons.tray_collapsed, { title: 'Show tray icons' });
+      const tray_group = el('div', 'tray_group');
+      tray_group.append(tray_toggle, tray);
+      tray.hidden = true;
+
+      tray_toggle.addEventListener('click', () => {
+        is_tray_expanded = !is_tray_expanded;
+        set_visible(tray, is_tray_expanded);
+        set_text(tray_toggle, is_tray_expanded ? icons.tray_expanded : icons.tray_collapsed);
+        tray_toggle.title = is_tray_expanded ? 'Hide tray icons' : 'Show tray icons';
+      });
+
       const right = el('div', 'right');
-      right.append(paused, network_stat.node, memory_stat.node, cpu_stat.node, tray, clock_stat.node);
+      right.append(paused, network_stat.node, memory_stat.node, cpu_stat.node, tray_group, clock_stat.node);
 
       const app = el('div', 'app');
       app.append(left, center, right);
@@ -131,19 +147,34 @@
 
       let workspaces_signature = null;
 
+      // GlazeWM only reports workspaces that have been opened, and keep_alive only stops them
+      // from closing, so 1-5 are drawn even before they exist; focusing one creates it.
+      const pinned_workspace_names = ['1', '2', '3', '4', '5'];
+
       function update_workspaces(current_workspaces) {
-        const signature = current_workspaces
-          .map(w => `${w.name}|${w.displayName ?? ''}|${w.hasFocus}|${w.isDisplayed}`)
+        const active_by_name = new Map(current_workspaces.map(w => [w.name, w]));
+        const extra_names = current_workspaces
+          .map(w => w.name)
+          .filter(name => !pinned_workspace_names.includes(name));
+        const shown_names = [...pinned_workspace_names, ...extra_names];
+
+        const signature = shown_names
+          .map(name => {
+            const w = active_by_name.get(name);
+            return w ? `${name}|${w.displayName ?? ''}|${w.hasFocus}|${w.isDisplayed}` : `${name}|empty`;
+          })
           .join('\n');
         if (signature === workspaces_signature) return;
         workspaces_signature = signature;
         workspaces.replaceChildren(
-          ...current_workspaces.map(workspace => {
+          ...shown_names.map(name => {
+            const workspace = active_by_name.get(name);
             const classes = ['workspace'];
-            if (workspace.hasFocus) classes.push('focused');
-            if (workspace.isDisplayed) classes.push('displayed');
-            return el('button', classes.join(' '), workspace.displayName ?? workspace.name, {
-              'data-command': `focus --workspace ${workspace.name}`,
+            if (!workspace) classes.push('empty');
+            if (workspace?.hasFocus) classes.push('focused');
+            if (workspace?.isDisplayed) classes.push('displayed');
+            return el('button', classes.join(' '), workspace?.displayName ?? name, {
+              'data-command': `focus --workspace ${name}`,
             });
           }),
         );
@@ -210,7 +241,7 @@
         }
 
         const tray_icons = systray?.icons ?? [];
-        set_visible(tray, tray_icons.length > 0);
+        set_visible(tray_group, tray_icons.length > 0);
         if (tray_icons.length) update_tray(tray_icons);
 
         set_visible(clock_stat.node, Boolean(date));

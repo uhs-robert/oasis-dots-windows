@@ -34,6 +34,16 @@
       };
 
       const root = document.getElementById('root');
+
+      // There is no devtools window for widgets, so failures are drawn where the popup would be.
+      function show_error(message) {
+        const container = el('div', 'panel', '');
+        container.append(el('div', 'panel_title', 'which-key error'), el('div', 'entry_label', message));
+        root.replaceChildren(container);
+      }
+      window.addEventListener('error', event => show_error(String(event.message)));
+      window.addEventListener('unhandledrejection', event => show_error(String(event.reason)));
+
       const widget_window = zebar.currentWidget().tauriWindow;
 
       // The window stays up and click-through, and is simply empty outside a mode.
@@ -83,6 +93,13 @@
       }
 
       glazewm.onOutput(update);
+      glazewm.onError(error => show_error(`glazewm provider: ${error}`));
+
+      // TEMPORARY for testing on the server: proves the window exists and where it sits. Remove before merge.
+      root.replaceChildren(panel({ name: 'which-key ready' }, [['', 'this panel hides in 3 s']]));
+      setTimeout(() => {
+        if (shown_mode_key === null || shown_mode_key === '') root.replaceChildren();
+      }, 3000);
     </script>
   </body>
 </html>

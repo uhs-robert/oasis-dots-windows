@@ -3,7 +3,9 @@
   "name": "oasis",
   "version": "0.1.0",
   "description": "Oasis Moonlight top bar for GlazeWM, with a which-key popup for binding modes.",
-  "tags": ["topbar"],
+  "tags": [
+    "topbar"
+  ],
   "previewImages": [],
   "repositoryUrl": "",
   "widgets": [
@@ -15,7 +17,10 @@
       "focused": false,
       "resizable": false,
       "transparent": true,
-      "includeFiles": ["*.html", "*.css"],
+      "includeFiles": [
+        "*.html",
+        "*.css"
+      ],
       "caching": {
         "defaultDuration": 604800,
         "rules": []
@@ -50,7 +55,10 @@
       "focused": false,
       "resizable": false,
       "transparent": true,
-      "includeFiles": ["*.html", "*.css"],
+      "includeFiles": [
+        "*.html",
+        "*.css"
+      ],
       "caching": {
         "defaultDuration": 604800,
         "rules": []
@@ -67,7 +75,7 @@
           "width": "640px",
           "height": "170px",
           "monitorSelection": {
-            "type": "primary"
+            "type": "all"
           },
           "dockToEdge": {
             "enabled": false,
