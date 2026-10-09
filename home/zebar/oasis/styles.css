@@ -161,3 +161,7 @@ button.logo {
 .high_usage {
   color: var(--red);
 }
+
+[hidden] {
+  display: none !important;
+}

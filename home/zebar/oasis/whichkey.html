@@ -65,9 +65,16 @@
 
       const glazewm = zebar.createProvider({ type: 'glazewm' });
 
+      // glazewm emits on every window event; rebuilding the panel for an unchanged mode would repaint
+      // a software-rendered window for nothing.
+      let shown_mode_key = null;
+
       function update(output) {
         const binding_mode = output?.bindingModes?.[0];
         const hints = binding_mode && mode_hints[binding_mode.name];
+        const mode_key = hints ? `${binding_mode.name}|${binding_mode.displayName ?? ''}` : '';
+        if (mode_key === shown_mode_key) return;
+        shown_mode_key = mode_key;
         if (hints) {
           root.replaceChildren(panel(binding_mode, hints));
         } else {

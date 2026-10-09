@@ -11,26 +11,58 @@
     <script type="module">
       import * as zebar from 'https://esm.sh/zebar@3.0';
 
+      // Windows Server in the client's remote sessions has no GPU: WebView2 renders in software and
+      // the remote tool re-encodes every changed pixel, so DWM load follows how often the bar
+      // changes. Zebar's own refresh intervals (cpu, memory, network 5 s; date 1 s) are too chatty
+      // there.
+      const server_refresh_ms = 10_000;
+      // The clock shows no seconds; this only bounds how stale the minute can get.
+      const server_date_refresh_ms = 15_000;
+      const host_timeout_ms = 3_000;
+
+      // Resolves to the host output, or null if it does not arrive in time, which keeps Zebar's defaults.
+      function first_host_output() {
+        const host = zebar.createProvider({ type: 'host' });
+        return new Promise(resolve => {
+          const timer = setTimeout(() => resolve(null), host_timeout_ms);
+          const done = output => {
+            clearTimeout(timer);
+            resolve(output);
+          };
+          // The output may have landed before a listener could be attached.
+          if (host.output) done(host.output);
+          else host.onOutput(done);
+        }).finally(() => host.stop());
+      }
+
+      function is_windows_server(host) {
+        return [host?.osName, host?.friendlyOsVersion].some(name => /server/i.test(name ?? ''));
+      }
+
+      const refresh_options = is_windows_server(await first_host_output())
+        ? { stat: { refreshInterval: server_refresh_ms }, date: { refreshInterval: server_date_refresh_ms } }
+        : { stat: {}, date: {} };
+
       const providers = zebar.createProviderGroup({
         glazewm: { type: 'glazewm' },
-        cpu: { type: 'cpu' },
-        memory: { type: 'memory' },
-        network: { type: 'network' },
+        cpu: { type: 'cpu', ...refresh_options.stat },
+        memory: { type: 'memory', ...refresh_options.stat },
+        network: { type: 'network', ...refresh_options.stat },
         systray: { type: 'systray' },
-        date: { type: 'date', formatting: 'EEE d MMM  HH:mm' },
+        date: { type: 'date', formatting: 'EEE d MMM  HH:mm', ...refresh_options.date },
       });
 
       const root = document.getElementById('root');
 
       // Nerd Font codepoints (JetBrainsMono Nerd Font).
       const icons = {
-        logo: '',
-        cpu: '',
-        memory: '',
-        wifi: '',
+        logo: '',
+        cpu: '',
+        memory: '',
+        wifi: '',
         ethernet: '\u{f0200}',
         offline: '\u{f05aa}',
-        clock: '',
+        clock: '',
       };
 
       // Runs the exe directly: going through launch.ps1 cost a cold pwsh start plus a Start Menu search.
@@ -47,56 +79,92 @@
         return node;
       }
 
-      function stat(class_name, icon, text, extra_class) {
+      // The setters below write only on change: every DOM write can repaint, and each repaint is
+      // software-rendered and re-sent over the remote session.
+      function set_text(node, text) {
+        if (node.textContent !== text) node.textContent = text;
+      }
+
+      function set_visible(node, visible) {
+        if (node.hidden === visible) node.hidden = !visible;
+      }
+
+      function stat(class_name, icon, extra_class) {
+        const icon_node = el('span', 'stat_icon', icon);
+        const text_node = el('span', extra_class);
         const node = el('div', class_name);
-        node.append(el('span', 'stat_icon', icon), el('span', extra_class, text));
-        return node;
+        node.append(icon_node, text_node);
+        return { node, icon_node, text_node };
       }
 
-      function workspaces_section(glazewm) {
-        const container = el('div', 'workspaces');
-        for (const workspace of glazewm.currentWorkspaces) {
-          const classes = ['workspace'];
-          if (workspace.hasFocus) classes.push('focused');
-          if (workspace.isDisplayed) classes.push('displayed');
-          container.append(
-            el('button', classes.join(' '), workspace.displayName ?? workspace.name, {
-              'data-command': `focus --workspace ${workspace.name}`,
-            }),
-          );
-        }
-        return container;
-      }
+      // The bar's DOM is built once; render() only patches the parts whose values changed.
+      // Flow Launcher is single-instance, so relaunching it shows its search box.
+      const logo_button = el('button', 'logo', icons.logo, { 'data-command': flow_launcher_command });
+      // Without glazewm the logo is inert, so it is not a button.
+      const logo_plain = el('span', 'logo', icons.logo);
+      const workspaces = el('div', 'workspaces');
+      const left = el('div', 'left');
+      left.append(logo_button, logo_plain, workspaces);
 
-      // The bar re-renders on every CPU/memory tick, but the tray rarely changes. Its node is kept
-      // and re-attached, and only rebuilt when the icon list changes, since software-rendered
-      // WebView2 makes redundant image decodes costly.
+      const mode_name = el('span', 'mode_name');
+      const title = el('div', 'title');
+      const center = el('div', 'center');
+      center.append(mode_name, title);
+
+      const paused = el('button', 'paused', 'PAUSED', { 'data-command': 'wm-toggle-pause' });
+      const network_stat = stat('network', icons.offline);
+      const memory_stat = stat('memory', icons.memory);
+      const cpu_stat = stat('cpu', icons.cpu);
+      const clock_stat = stat('clock', icons.clock);
+
+      // The tray is rebuilt only when the icon list changes, since software-rendered WebView2
+      // makes redundant image decodes costly.
       const tray = el('div', 'tray');
       let tray_signature = null;
 
-      function tray_section(systray) {
-        const icons_now = systray.icons ?? [];
-        const signature = icons_now.map(i => `${i.id}|${i.iconHash}|${i.tooltip}`).join('\n');
-        if (signature !== tray_signature) {
-          tray_signature = signature;
-          tray.replaceChildren(
-            ...icons_now.map(icon => {
-              const node = el('img', 'tray_icon', null, {
-                src: icon.iconUrl,
-                title: icon.tooltip,
-                alt: '',
-                'data-tray-id': icon.id,
-              });
-              node.draggable = false;
-              return node;
-            }),
-          );
-        }
-        return tray;
+      const right = el('div', 'right');
+      right.append(paused, network_stat.node, memory_stat.node, cpu_stat.node, tray, clock_stat.node);
+
+      const app = el('div', 'app');
+      app.append(left, center, right);
+      root.replaceChildren(app);
+
+      let workspaces_signature = null;
+
+      function update_workspaces(current_workspaces) {
+        const signature = current_workspaces
+          .map(w => `${w.name}|${w.displayName ?? ''}|${w.hasFocus}|${w.isDisplayed}`)
+          .join('\n');
+        if (signature === workspaces_signature) return;
+        workspaces_signature = signature;
+        workspaces.replaceChildren(
+          ...current_workspaces.map(workspace => {
+            const classes = ['workspace'];
+            if (workspace.hasFocus) classes.push('focused');
+            if (workspace.isDisplayed) classes.push('displayed');
+            return el('button', classes.join(' '), workspace.displayName ?? workspace.name, {
+              'data-command': `focus --workspace ${workspace.name}`,
+            });
+          }),
+        );
       }
 
-      function mode_section(binding_mode) {
-        return el('span', 'mode_name', binding_mode.displayName ?? binding_mode.name);
+      function update_tray(icons_now) {
+        const signature = icons_now.map(i => `${i.id}|${i.iconHash}|${i.tooltip}`).join('\n');
+        if (signature === tray_signature) return;
+        tray_signature = signature;
+        tray.replaceChildren(
+          ...icons_now.map(icon => {
+            const node = el('img', 'tray_icon', null, {
+              src: icon.iconUrl,
+              title: icon.tooltip,
+              alt: '',
+              'data-tray-id': icon.id,
+            });
+            node.draggable = false;
+            return node;
+          }),
+        );
       }
 
       function network_icon(network) {
@@ -112,48 +180,44 @@
 
       function render(output) {
         const { glazewm, cpu, memory, network, systray, date } = output;
-        const app = el('div', 'app');
 
-        const left = el('div', 'left');
-        // Flow Launcher is single-instance, so relaunching it shows its search box.
-        left.append(
-          glazewm
-            ? el('button', 'logo', icons.logo, { 'data-command': flow_launcher_command })
-            : el('span', 'logo', icons.logo),
-        );
-        if (glazewm) left.append(workspaces_section(glazewm));
+        set_visible(logo_button, Boolean(glazewm));
+        set_visible(logo_plain, !glazewm);
+        set_visible(workspaces, Boolean(glazewm));
+        if (glazewm) update_workspaces(glazewm.currentWorkspaces);
 
-        const center = el('div', 'center');
         const active_mode = glazewm?.bindingModes?.[0];
-        if (active_mode) {
-          center.append(mode_section(active_mode));
-        } else {
-          center.append(el('div', 'title', glazewm?.focusedContainer?.title ?? ''));
-        }
+        set_visible(mode_name, Boolean(active_mode));
+        set_visible(title, !active_mode);
+        if (active_mode) set_text(mode_name, active_mode.displayName ?? active_mode.name);
+        else set_text(title, glazewm?.focusedContainer?.title ?? '');
 
-        const right = el('div', 'right');
-        if (glazewm?.isPaused) {
-          right.append(el('button', 'paused', 'PAUSED', { 'data-command': 'wm-toggle-pause' }));
-        }
+        set_visible(paused, Boolean(glazewm?.isPaused));
+
+        set_visible(network_stat.node, Boolean(network));
         if (network) {
-          right.append(stat('network', network_icon(network), network.defaultGateway?.ssid ?? ''));
+          set_text(network_stat.icon_node, network_icon(network));
+          set_text(network_stat.text_node, network.defaultGateway?.ssid ?? '');
         }
-        if (memory) {
-          right.append(stat('memory', icons.memory, `${Math.round(memory.usage)}%`));
-        }
-        if (cpu) {
-          right.append(
-            stat('cpu', icons.cpu, `${Math.round(cpu.usage)}%`, cpu.usage > 85 ? 'high_usage' : ''),
-          );
-        }
-        if (systray?.icons?.length) right.append(tray_section(systray));
-        if (date) right.append(stat('clock', icons.clock, date.formatted));
 
-        app.append(left, center, right);
-        root.replaceChildren(app);
+        set_visible(memory_stat.node, Boolean(memory));
+        if (memory) set_text(memory_stat.text_node, `${Math.round(memory.usage)}%`);
+
+        set_visible(cpu_stat.node, Boolean(cpu));
+        if (cpu) {
+          set_text(cpu_stat.text_node, `${Math.round(cpu.usage)}%`);
+          cpu_stat.text_node.classList.toggle('high_usage', cpu.usage > 85);
+        }
+
+        const tray_icons = systray?.icons ?? [];
+        set_visible(tray, tray_icons.length > 0);
+        if (tray_icons.length) update_tray(tray_icons);
+
+        set_visible(clock_stat.node, Boolean(date));
+        if (date) set_text(clock_stat.text_node, date.formatted);
       }
 
-      // The bar is rebuilt on every provider update, so a click could land on a
+      // Workspace buttons are replaced when workspaces change, so a click could land on a
       // node that was just replaced; pointerdown fires before that can happen.
       root.addEventListener('pointerdown', event => {
         const command = event.target.closest('[data-command]')?.dataset.command;
