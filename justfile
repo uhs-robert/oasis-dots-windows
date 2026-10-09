@@ -1,4 +1,6 @@
 set shell := ["pwsh", "-NoProfile", "-Command"]
+# Without this, comments inside recipes are echoed (and run) like commands.
+set ignore-comments := true
 
 # Full install, picker included.
 install *args:
