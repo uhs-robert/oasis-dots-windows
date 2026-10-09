@@ -25,11 +25,17 @@ param(
   [string[]] $select,
   [switch] $unattended,
   [switch] $reselect,
-  [ValidateSet('repos', 'packages', 'links', 'environment', 'system', 'post')]
   [string[]] $only = @('repos', 'packages', 'links', 'environment', 'system', 'post')
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Validated here rather than with [ValidateSet]: under `pwsh -File`, `-only links,environment`
+# arrives as one comma-joined string, which ValidateSet rejects before it can be split.
+$known_steps = @('repos', 'packages', 'links', 'environment', 'system', 'post')
+$only = @($only -split ',' | ForEach-Object Trim | Where-Object { $_ })
+$unknown_steps = @($only | Where-Object { $_ -notin $known_steps })
+if ($unknown_steps) { throw "Unknown -only step(s): $($unknown_steps -join ', '). Known: $($known_steps -join ', ')" }
 foreach ($module in 'Log', 'Packages', 'Picker', 'Manifest') {
   Import-Module (Join-Path $PSScriptRoot "lib/$module.psm1") -Force
 }
