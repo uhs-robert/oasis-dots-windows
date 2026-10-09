@@ -13,7 +13,7 @@
 </p>
 <p align="center">A keyboard-driven Linux workflow for Windows: tiling, a real package manager and your dotfiles.</p>
 
-<!-- TODO: screenshot of the desktop mode (GlazeWM + Zebar + WezTerm) once it has run on a real machine -->
+<img width="1393" height="1045" alt="screenshot-2026-10-09_14h33m27s" src="https://github.com/user-attachments/assets/36eda190-7de1-4d28-b67d-2263f248cd1e" />
 
 ## 🖥️ Overview
 
