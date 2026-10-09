@@ -10,7 +10,9 @@
     <div id="root"></div>
 
     <script type="module">
-      import * as zebar from 'https://esm.sh/zebar@3.0';
+      // Pinned to the installed Zebar's minor version: `3.0` resolves to an older client that lacks
+      // newer APIs such as currentWidget().tauriWindow.
+      import * as zebar from 'https://esm.sh/zebar@3.3';
 
       // What each binding mode's keys do, kept in sync with binding_modes in
       // home/glazewm/config.yaml.
@@ -49,7 +51,7 @@
       // The window stays up and click-through, and is simply empty outside a mode.
       // Hiding and showing it instead would risk show() taking focus, and resize
       // mode acts on the focused window.
-      widget_window.setIgnoreCursorEvents(true).catch(() => {});
+      widget_window?.setIgnoreCursorEvents(true).catch(error => show_error(`click-through: ${error}`));
 
       function el(tag, class_name, text) {
         const node = document.createElement(tag);

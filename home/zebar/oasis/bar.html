@@ -9,7 +9,9 @@
     <div id="root"></div>
 
     <script type="module">
-      import * as zebar from 'https://esm.sh/zebar@3.0';
+      // Pinned to the installed Zebar's minor version: `3.0` resolves to an older client that lacks
+      // newer APIs such as currentWidget().tauriWindow.
+      import * as zebar from 'https://esm.sh/zebar@3.3';
 
       // Windows Server in the client's remote sessions has no GPU: WebView2 renders in software and
       // the remote tool re-encodes every changed pixel, so DWM load follows how often the bar
