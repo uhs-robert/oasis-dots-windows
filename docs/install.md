@@ -131,7 +131,7 @@ mode. Those are the WezTerm and Zebar links and `GLAZEWM_CONFIG_PATH`.
 | `~\.config\wezterm`                                                                        | this repo `home\wezterm`                | always           |
 | `Documents\PowerShell\Microsoft.PowerShell_profile.ps1`                                    | this repo `home\powershell\profile.ps1` | always           |
 | `%APPDATA%\nushell\config.nu`, `env.nu`                                                    | this repo `home\nushell`                | `shells/nu`      |
-| `~\.glzr\zebar\settings.json`, `~\.glzr\zebar\oasis`                                       | this repo `home\zebar`                  | always           |
+| `~\.glzr\zebar\settings.json` (a copy, since Zebar rewrites it), `~\.glzr\zebar\oasis`          | this repo `home\zebar`                  | desktop          |
 | `%APPDATA%\yazi\config\*` (keymap, yazi, theme, package, init) and plugins                 | this repo `home\yazi`, oasis-dots       | always           |
 | `%APPDATA%\yazi\config\flavors\oasis-moonlight-dark.yazi`                                  | oasis.nvim                              | always           |
 | `%LOCALAPPDATA%\nvim`                                                                      | neovim repo                             | always           |
